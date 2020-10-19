@@ -21,7 +21,7 @@ void _inicializarJugador(tipoelem *registro)
 //Función privada que imprime los datos de un jugador
 void _imprimirJugador(tipoelem E)
 {
-    printf("Nombre jugador: %s\nRol: %c\nLugar tarea: %s\nDescripción tarea: %s\n", E.nombreJugador, E.rol, E.lugarTarea, E.descripcionTarea);
+    printf("Nombre jugador: %s\nDescripción tarea: %s\n", E.nombreJugador, E.descripcionTarea);
 }
 
 //Función para leer el archivo de disco
@@ -95,11 +95,38 @@ void listadoJugadores(abb A)
 //Función que genera los datos de una partida: jugadores, roles y tareas
 void generarPartida(abb *Arbol)
 {
+    int numJugadores;
+    char opcion;
+        printf("Introduce el número de jugadores: ");
+        scanf(" %d", &numJugadores);
+        opcion = '\0';
+        while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N') {
+        printf("Quieres hacer automáticamente el reparto de jugadores? (s/n): ");
+        scanf(" %c", &opcion);
+        }
+        if (opcion == 's' || opcion == 'S') { // Repartir los jugadores automáticamente
+            _aleatorio(1, numJugadores);
+        } else { // Repartir los jugadores manualmente
+
+        }
 }
 
 //Función que imprime los datos de un usuario cuyo nombre se introduce por teclado
 void consultarJugador(abb Arbol)
 {
+    tipoelem registro;
+    *(registro.nombreJugador) = "";
+    while (registro.nombreJugador[0] != '@')
+    {
+        printf("Introduce el nombre del jugador (empezando por @): ");
+        scanf(" %s", registro.nombreJugador);
+    }
+    if (es_miembro(Arbol, registro)) {
+        leer(Arbol, &registro);
+        _imprimirJugador(registro);
+    } else {
+        printf("El jugador no existe.\n");
+    }
 }
 
 //Función que imprime todos los usuarios que están en una habitación determinada
