@@ -21,7 +21,14 @@ void _inicializarJugador(tipoelem *registro)
 //Función privada que imprime los datos de un jugador
 void _imprimirJugador(tipoelem E)
 {
-    printf("Nombre jugador: %s\nDescripción tarea: %s\n", E.nombreJugador, E.descripcionTarea);
+    if (strlen(E.descripcionTarea) > 0)
+    {
+        printf("Última tarea realizada: |%s| en |%s|\n", E.descripcionTarea, E.lugarTarea);
+    }
+    else
+    {
+        printf("Ninguna tarea asignada\n");
+    }
 }
 
 //Función para leer el archivo de disco
@@ -51,7 +58,7 @@ void altaJugador(abb *Arbol)
     *(registro.nombreJugador) = "";
     while (registro.nombreJugador[0] != '@')
     {
-        printf("Introduce el nombre del jugador (empezando por @): ");
+        printf("Nombre de Jugador (@xxx): ");
         scanf(" %s", registro.nombreJugador);
     }
     _inicializarJugador(&registro);
@@ -68,10 +75,11 @@ void bajaJugador(abb *Arbol)
     *(registro.nombreJugador) = "";
     while (registro.nombreJugador[0] != '@')
     {
-        printf("Introduce el nombre del jugador (empezando por @): ");
+        printf("Nombre de Jugador (@xxx): ");
         scanf(" %s", registro.nombreJugador);
     }
-    if (es_miembro == 0) {
+    if (es_miembro == 0)
+    {
         printf("El jugador no es un miembro del árbol.\n");
         return;
     }
@@ -87,7 +95,7 @@ void listadoJugadores(abb A)
     {
         listadoJugadores(izq(A));
         leer(A, &jugador);
-        printf("\t%s\n", jugador.nombreJugador);
+        printf("%s\n", jugador.nombreJugador);
         listadoJugadores(der(A));
     }
 }
@@ -97,18 +105,21 @@ void generarPartida(abb *Arbol)
 {
     int numJugadores;
     char opcion;
-        printf("Introduce el número de jugadores: ");
-        scanf(" %d", &numJugadores);
-        opcion = '\0';
-        while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N') {
+    printf("Introduce el número de jugadores: ");
+    scanf(" %d", &numJugadores);
+    opcion = '\0';
+    while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N')
+    {
         printf("Quieres hacer automáticamente el reparto de jugadores? (s/n): ");
         scanf(" %c", &opcion);
-        }
-        if (opcion == 's' || opcion == 'S') { // Repartir los jugadores automáticamente
-            _aleatorio(1, numJugadores);
-        } else { // Repartir los jugadores manualmente
-
-        }
+    }
+    if (opcion == 's' || opcion == 'S')
+    { // Repartir los jugadores automáticamente
+        _aleatorio(1, numJugadores);
+    }
+    else
+    { // Repartir los jugadores manualmente
+    }
 }
 
 //Función que imprime los datos de un usuario cuyo nombre se introduce por teclado
@@ -118,13 +129,16 @@ void consultarJugador(abb Arbol)
     *(registro.nombreJugador) = "";
     while (registro.nombreJugador[0] != '@')
     {
-        printf("Introduce el nombre del jugador (empezando por @): ");
+        printf("Nombre de Jugador (@xxx): ");
         scanf(" %s", registro.nombreJugador);
     }
-    if (es_miembro(Arbol, registro)) {
+    if (es_miembro(Arbol, registro))
+    {
         leer(Arbol, &registro);
         _imprimirJugador(registro);
-    } else {
+    }
+    else
+    {
         printf("El jugador no existe.\n");
     }
 }
@@ -132,4 +146,24 @@ void consultarJugador(abb Arbol)
 //Función que imprime todos los usuarios que están en una habitación determinada
 void consultarPorHabitacion(abb Arbol)
 {
+    int numHabitacion;
+    char **habitaciones = (char **)malloc(sizeof(char **) * 9);
+    habitaciones[0] = "Armería";
+    habitaciones[1] = "Cafetería";
+    habitaciones[2] = "Comunicaciones";
+    habitaciones[3] = "Electricidad";
+    habitaciones[4] = "Escudos";
+    habitaciones[5] = "Motor";
+    habitaciones[6] = "Navegación";
+    habitaciones[7] = "O2";
+    habitaciones[8] = "Seguridad";
+    for (numHabitacion = 0; numHabitacion < 9; numHabitacion++)
+    {
+        printf("\t%d. %s\n", numHabitacion + 1, habitaciones[numHabitacion]);
+    }
+    while (!(numHabitacion >= 0 && numHabitacion <= 9))
+    {
+        printf("Selecciona ubicacion: ");
+        scanf("%d", &numHabitacion);
+    }
 }

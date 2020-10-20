@@ -18,9 +18,9 @@ int main(int argc, char** argv) {
 
 opcion = '\0';
     //Menú
-    while(opcion != 's') {
-        printf("MENÚ\n\ta) Dar un jugador de alta\n\tb) Dar un jugador de baja\n\tl) Imprimir un listado de jugadores\n\tg) Generar una partida\n\tu) Consultar la última tarea asignada a un jugador\n\th) Consultar los jugadores con última tarea en una habitación\n");
-        printf("Introduce tu opción: ");
+        printf("\nBienvenid@ a AmongETSE\n\ta. Alta de jugador@\n\tb. Baja de jugador@\n\tl. Listado de jugador@s por orden alfabético\n\tg. Generar datos partida\n\tu. Consulta por jugador@ de la última tarea asignada\n\th. Consulta jugador@s por habitación\n\ts. Salir de la aplicación\n");
+    while(opcion != 's' && opcion != 'S') {
+        printf("\nOpcion: ");
         scanf(" %c", &opcion);
         switch (opcion) {
             case 'a':
