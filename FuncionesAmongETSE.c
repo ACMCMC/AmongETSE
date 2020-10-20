@@ -31,6 +31,20 @@ void _imprimirJugador(tipoelem E)
     }
 }
 
+// Función que recorre todos los jugadores e imprime aquellos cuya habitación coincida con la buscada
+void _imprimirPorHabitacion(abb A, char* habitacion) {
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _imprimirPorHabitacion(izq(A), habitacion);
+        leer(A, &jugador);
+        if (strcmp(jugador.lugarTarea, habitacion) == 0) {
+            printf("%s: Tarea |%s| en |%s|\n", jugador.nombreJugador, jugador.descripcionTarea, jugador.lugarTarea);
+        }
+        _imprimirPorHabitacion(der(A), habitacion);
+    }
+}
+
 //Función para leer el archivo de disco
 void leerArchivo(abb *A)
 {
@@ -78,7 +92,7 @@ void bajaJugador(abb *Arbol)
         printf("Nombre de Jugador (@xxx): ");
         scanf(" %s", registro.nombreJugador);
     }
-    if (es_miembro == 0)
+    if (es_miembro(*Arbol, registro) == 0)
     {
         printf("El jugador no es un miembro del árbol.\n");
         return;
@@ -161,9 +175,11 @@ void consultarPorHabitacion(abb Arbol)
     {
         printf("\t%d. %s\n", numHabitacion + 1, habitaciones[numHabitacion]);
     }
-    while (!(numHabitacion >= 0 && numHabitacion <= 9))
+    numHabitacion = 0;
+    while (!(numHabitacion >= 1 && numHabitacion <= 9))
     {
         printf("Selecciona ubicacion: ");
         scanf("%d", &numHabitacion);
     }
+    _imprimirPorHabitacion(Arbol, habitaciones[numHabitacion]);
 }
