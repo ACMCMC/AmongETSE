@@ -4,6 +4,10 @@
 
 #include "abb.h"
 
+#define ROL_IMPOSTOR 'I'
+#define ROL_TRIPULANTE 'T'
+#define NO_ASIGNADO '\0'
+
 /**
  * lee un archivo de jugadores de un fichero
  * @param A

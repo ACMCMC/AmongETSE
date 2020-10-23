@@ -50,7 +50,7 @@ opcion = '\0';
             break;
             case 's':
             case 'S':
-            printf("Saliendo del juego...\n");
+            printf("Adios\n");
             break;
             default:
             printf("Opción incorrecta.\n");
