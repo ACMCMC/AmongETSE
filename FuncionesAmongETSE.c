@@ -120,7 +120,7 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
     habitaciones[8] = "Seguridad";
 
     numTarea = _aleatorio(1, 8);                                                                         // Elegimos una tarea al azar
-    strncpy(jugador->descripcionTarea, tarea[numTarea - 1], sizeof(char) * strlen(tarea[numTarea - 1])); // Copiamos la tarea en el campo descripcionTarea
+    strncpy(jugador->descripcionTarea, tarea[numTarea - 1], sizeof(char) * (strlen(tarea[numTarea - 1]) + 1)); // Copiamos la tarea en el campo descripcionTarea
 
     switch (numTarea)
     {
@@ -190,7 +190,7 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
         break;
     }
 
-    strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * strlen(habitaciones[numHabitacion])); // Copiamos la habitación de la tarea en el campo lugarTarea
+    strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la tarea en el campo lugarTarea
 }
 
 //Función para leer el archivo de disco
