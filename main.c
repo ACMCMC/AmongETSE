@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
     
     //Crear el árbol de jugadores
     abb arbolJugadores;
+    crear(&arbolJugadores);
 
     //Leer el archivo de disco
     leerArchivo(&arbolJugadores);

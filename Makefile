@@ -10,7 +10,7 @@ OBJS_HEADERS := $(HEADERS:.h=.o)
 OBJS := $(ARCHS_C:.c=.o) $(OBJS_HEADERS)
 
 
-ARGS := -Wall -Wextra -pedantic
+ARGS := -Wall -Wextra -pedantic -g
 
 all: $(OUTPUTS)
 

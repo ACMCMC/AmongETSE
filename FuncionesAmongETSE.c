@@ -31,18 +31,59 @@ void _imprimirJugador(tipoelem E)
     }
 }
 
+void _auxContador(abb nodo, int *c)
+{
+    if (!es_vacio(nodo))
+    {
+        (*c)++;
+        _auxContador(izq(nodo), c);
+        _auxContador(der(nodo), c);
+    }
+}
+
+int _numeroNodos(abb A)
+{
+    int contador = 0;
+    _auxContador(A, &contador);
+    return contador;
+}
+
 // Función que recorre todos los jugadores e imprime aquellos cuya habitación coincida con la buscada
-void _imprimirPorHabitacion(abb A, char* habitacion) {
+void _imprimirPorHabitacion(abb A, char *habitacion)
+{
     tipoelem jugador;
     if (!es_vacio(A))
     {
         _imprimirPorHabitacion(izq(A), habitacion);
         leer(A, &jugador);
-        if (strcmp(jugador.lugarTarea, habitacion) == 0) {
+        if (strcmp(jugador.lugarTarea, habitacion) == 0)
+        {
             printf("%s: Tarea |%s| en |%s|\n", jugador.nombreJugador, jugador.descripcionTarea, jugador.lugarTarea);
         }
         _imprimirPorHabitacion(der(A), habitacion);
     }
+}
+
+void _auxBuscarPorIndice(abb A, int indiceBuscado, int *indiceActual, tipoelem *resultado)
+{
+    if (!es_vacio(A) && (*indiceActual <= indiceBuscado))
+    {
+        _auxBuscarPorIndice(izq(A), indiceBuscado, indiceActual, resultado);
+        (*indiceActual)++;
+        if (indiceBuscado == *indiceActual)
+        {
+            leer(A, resultado);
+        }
+        _auxBuscarPorIndice(der(A), indiceBuscado, indiceActual, resultado);
+    }
+}
+
+void _buscarPorIndice(abb A, int indiceBuscado, tipoelem *resultado)
+{
+    int *indiceActual = (int *)malloc(sizeof(int));
+    *indiceActual = 0;
+    _auxBuscarPorIndice(A, indiceBuscado, indiceActual, resultado);
+    free(indiceActual);
 }
 
 //Función para leer el archivo de disco
@@ -118,7 +159,11 @@ void listadoJugadores(abb A)
 void generarPartida(abb *Arbol)
 {
     int numJugadores;
+    int contador;
     char opcion;
+    tipoelem jugador;
+    abb arbolJuego;
+    crear(&arbolJuego);
     printf("Introduce el número de jugadores: ");
     scanf(" %d", &numJugadores);
     opcion = '\0';
@@ -129,11 +174,27 @@ void generarPartida(abb *Arbol)
     }
     if (opcion == 's' || opcion == 'S')
     { // Repartir los jugadores automáticamente
-        _aleatorio(1, numJugadores);
+        contador = 0;
+        while (contador < numJugadores)
+        {
+            _buscarPorIndice(*Arbol, _aleatorio(1, _numeroNodos(*Arbol)), &jugador);
+            if (!es_miembro(arbolJuego, jugador))
+            {
+                insertar(&arbolJuego, jugador);
+                contador++;
+                printf("Nombre del jugador %d: %s\n", contador, jugador.nombreJugador);
+            }
+        }
     }
     else
     { // Repartir los jugadores manualmente
+        contador = 0;
+        while (contador < numJugadores)
+        {
+        }
     }
+
+    destruir(&arbolJuego);
 }
 
 //Función que imprime los datos de un usuario cuyo nombre se introduce por teclado
