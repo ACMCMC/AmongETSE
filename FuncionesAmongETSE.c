@@ -270,6 +270,7 @@ void generarPartida(abb *Arbol)
     tipoelem jugador;                          // Variable auxiliar para almacenar un jugador (se reasignará según sea conveniente)
     abb arbolJuego;                            // Aquí guardaremos los jugadores de la partida
     crear(&arbolJuego);                        // Creamos el árbol de los jugadores de la partida
+    char* nombreJugador = NULL;
 
     printf("En esta versión del programa, los participantes se seleccionarán aleatoriamente\n");
 
@@ -279,7 +280,7 @@ void generarPartida(abb *Arbol)
         scanf("%d", &numJugadores);
     } while (!(numJugadores >= 4 && numJugadores <= 10));
 
-    opcion = 's'; // Así nos saltamos este menú, ya que los jugadores se eligen automáticamente
+    opcion = '\0'; // Así nos saltamos este menú, ya que los jugadores se eligen automáticamente
     while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N')
     {
         printf("Quieres hacer automáticamente el reparto de jugadores? (s/n): ");
@@ -323,10 +324,23 @@ void generarPartida(abb *Arbol)
         contador = 0;
         while (contador < numJugadores)
         {
-            contador++;
+            printf("Nombre de jugador: ");
+            scanf("%s", nombreJugador);
+            if (nombreJugador[0] == '@') {
+                buscar_nodo(*Arbol, nombreJugador, &jugador);
+                if (!es_miembro(arbolJuego, jugador)) {
+                    _asignarTareaAleatoriamente(&jugador);
+                    insertar(&arbolJuego, jugador);
+                    contador++;
+                }
+            }
         }
+
+
     }
 
+        printf("\nEstado final de los jugadores:\n");
+        listadoJugadores(arbolJuego);
     destruir(&arbolJuego);
 }
 
