@@ -38,7 +38,7 @@ opcion = '\0';
             break;
             case 'g':
             case 'G':
-            generarPartida(&arbolJugadores);
+            jugar(&arbolJugadores);
             break;
             case 'u':
             case 'U':

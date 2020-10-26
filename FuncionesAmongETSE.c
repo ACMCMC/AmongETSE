@@ -5,6 +5,11 @@
 
 #include "abb.h"
 #include "FuncionesAmongETSE.h"
+#include "cola.h"
+
+#define ROL_IMPOSTOR 'I'
+#define ROL_TRIPULANTE 'T'
+#define NO_ASIGNADO '\0'
 
 //Función privada que genera un número aleatorio entre inf y sup
 unsigned int _aleatorio(int inf, int sup)
@@ -15,20 +20,36 @@ unsigned int _aleatorio(int inf, int sup)
 void _inicializarJugador(tipoelem *registro)
 { //inicializa los campos rol,descripcionTarea y lugarTarea
     registro->rol = NO_ASIGNADO;
-    *(registro->descripcionTarea) = NO_ASIGNADO;
-    *(registro->lugarTarea) = NO_ASIGNADO;
+    crear_cola(&(registro->tareas));
+}
+
+// Imprime los elementos de una cola de tareas
+void _imprimirTareas(cola* tareas) {
+    cola colaAux;
+    crear_cola(&colaAux);
+    tipoelemCola elem;
+    while (!es_vacia_cola(*tareas)) {
+        elem = primero(*tareas);
+        suprimir_cola(tareas);
+        printf("Tarea: |%s| en |%s| ", elem.descripcionTarea, elem.lugarTarea);
+        insertar_cola(&colaAux, elem);
+    }
+    destruir_cola(tareas);
+    tareas = colaAux;
 }
 
 //Función privada que imprime los datos de un jugador
 void _imprimirJugador(tipoelem E)
 {
-    if (E.descripcionTarea[0] != NO_ASIGNADO && E.lugarTarea[0] != NO_ASIGNADO && E.rol != NO_ASIGNADO)
+    if (E.nombreJugador[0] != NO_ASIGNADO)
     {
-        printf("%s\tRol: %c  Tarea: |%s\t| en |%s\t|\n", E.nombreJugador, E.rol, E.descripcionTarea, E.lugarTarea);
+        printf("%s", E.nombreJugador);
+    if (E.rol != NO_ASIGNADO)
+    {
+        printf("\tRol: %c", E.rol);
+        _imprimirTareas(&(E.tareas));
     }
-    else if (E.nombreJugador[0] != NO_ASIGNADO)
-    {
-        printf("%s\n", E.nombreJugador);
+    printf("\n");
     }
     else
     {
@@ -193,6 +214,30 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
     strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la tarea en el campo lugarTarea
 }
 
+// Recorre un árbol llamando a _inicializarJugador() en cada nodo
+void _limpiarDatos(abb A) {
+
+}
+
+void _ejecutarTarea() {
+
+}
+
+// Establece el rol de un jugador como 'K' (killed)
+void _matarJugador() {
+
+}
+
+// Devuelve el número de tripulantes que hay en una habitación
+int _numTripulantesPorHabitacion(abb A, char* nombreHabitacion) {
+
+}
+
+// Elimina la tarea del primero de la cola de tareas del jugador
+void _siguienteTarea() {
+
+}
+
 //Función para leer el archivo de disco
 void leerArchivo(abb *A)
 {
@@ -263,7 +308,7 @@ void listadoJugadores(abb A)
 }
 
 //Función que genera los datos de una partida: jugadores, roles y tareas
-void generarPartida(abb *Arbol)
+void jugar(abb *Arbol)
 {
     int numJugadores, numImpostores, contador; // Variables auxiliares que usaremos para hacer la asignación
     char opcion;                               // Para el menú
@@ -287,9 +332,10 @@ void generarPartida(abb *Arbol)
         scanf(" %c", &opcion);
     }
 
+    numImpostores = round(numJugadores / 5.0); // Calculamos el número de impostores. Los x primeros jugadores que entren en el árbol serán impostores (esto podemos hacerlo porque entran en orden aleatorio, así que es lo mismo que que repartamos los roles después de que estén en el árbol)
+
     if (opcion == 's' || opcion == 'S')
     {                                              // Repartir los jugadores automáticamente
-        numImpostores = round(numJugadores / 5.0); // Calculamos el número de impostores. Los x primeros jugadores que entren en el árbol serán impostores (esto podemos hacerlo porque entran en orden aleatorio, así que es lo mismo que que repartamos los roles después de que estén en el árbol)
 
         printf("Jugadores seleccionados\n"); // Cuando elijamos a un jugador, iremos imprimiendo su nombre en la lista
 
@@ -314,10 +360,7 @@ void generarPartida(abb *Arbol)
             }
         }
 
-        printf("\nNúmero de impostores: %d\n", numImpostores);
 
-        printf("\nEstado final de los jugadores:\n");
-        listadoJugadores(arbolJuego);
     }
     else
     { // Repartir los jugadores manualmente
@@ -338,6 +381,8 @@ void generarPartida(abb *Arbol)
 
 
     }
+
+        printf("\nNúmero de impostores: %d\n", numImpostores);
 
         printf("\nEstado final de los jugadores:\n");
         listadoJugadores(arbolJuego);

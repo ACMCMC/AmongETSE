@@ -2,7 +2,7 @@ ARCHS_C := main.c
 
 OUTPUTS := $(ARCHS_C:.c=.out)
 
-HEADERS := FuncionesAmongETSE.h abb.h
+HEADERS := FuncionesAmongETSE.h abb.h cola.h
 HEADERS_DIR := .
 IMPLS_HEADERS := $(HEADERS:.h=.c)
 OBJS_HEADERS := $(HEADERS:.h=.o)

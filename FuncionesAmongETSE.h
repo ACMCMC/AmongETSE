@@ -4,9 +4,7 @@
 
 #include "abb.h"
 
-#define ROL_IMPOSTOR 'I'
-#define ROL_TRIPULANTE 'T'
-#define NO_ASIGNADO '\0'
+#define NUM_TAREAS 5
 
 /**
  * lee un archivo de jugadores de un fichero
@@ -36,7 +34,7 @@ void listadoJugadores(abb A);
  * Genera una nueva partida, asignando valores a cada jugador
  * @param A
  */
-void generarPartida(abb *A);
+void jugar(abb *A);
 
 /**
  * Consulta los datos de un jugador
