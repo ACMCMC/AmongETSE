@@ -193,6 +193,19 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
     strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la tarea en el campo lugarTarea
 }
 
+// Recorre un árbol llamando a _inicializarJugador() en cada nodo, y guardando los cambios en el árbol
+void _limpiarDatos(abb A) {
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _limpiarDatos(izq(A));
+        leer(A, &jugador);
+        _inicializarJugador(&jugador);
+        modificar(A, jugador);
+        _limpiarDatos(der(A));
+    }
+}
+
 //Función para leer el archivo de disco
 void leerArchivo(abb *A)
 {
@@ -272,12 +285,14 @@ void generarPartida(abb *Arbol)
     crear(&arbolJuego);                        // Creamos el árbol de los jugadores de la partida
     char* nombreJugador = NULL;
 
+    _limpiarDatos(*Arbol); // Limpiamos el árbol antes de generar una nueva partida
+
     printf("En esta versión del programa, los participantes se seleccionarán aleatoriamente\n");
 
     do
     {
         printf("Número de participantes (4-10): ");
-        scanf("%d", &numJugadores);
+        scanf(" %d", &numJugadores);
     } while (!(numJugadores >= 4 && numJugadores <= 10));
 
     opcion = 's'; // Así nos saltamos este menú, ya que los jugadores se eligen automáticamente
@@ -292,7 +307,7 @@ void generarPartida(abb *Arbol)
     if (opcion == 's' || opcion == 'S')
     {                                              // Repartir los jugadores automáticamente
 
-        printf("Jugadores seleccionados\n"); // Cuando elijamos a un jugador, iremos imprimiendo su nombre en la lista
+        printf("\nJugadores seleccionados\n"); // Cuando elijamos a un jugador, iremos imprimiendo su nombre en la lista
 
         contador = 0;
         while (contador < numJugadores)
@@ -323,7 +338,7 @@ void generarPartida(abb *Arbol)
         while (contador < numJugadores)
         {
             printf("Nombre de jugador: ");
-            scanf("%s", nombreJugador);
+            scanf(" %s", nombreJugador);
             if (nombreJugador[0] == '@') {
                 buscar_nodo(*Arbol, nombreJugador, &jugador);
                 if (!es_miembro(arbolJuego, jugador)) {
@@ -389,7 +404,7 @@ void consultarPorHabitacion(abb Arbol)
     while (!(numHabitacion >= 1 && numHabitacion <= 9))
     {
         printf("Selecciona ubicacion: ");
-        scanf("%d", &numHabitacion);
+        scanf(" %d", &numHabitacion); 
     }
     numHabitacion--; // El índice en la lista de nombres es una unidad menos
     _imprimirPorHabitacion(Arbol, habitaciones[numHabitacion]);
