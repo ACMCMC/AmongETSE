@@ -117,17 +117,17 @@ void _buscarPorIndice(abb A, int indiceBuscado, tipoelem *resultado)
 
 void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
 {
-    int numTarea, numHabitacion; // Aquí guardaremos el número de la descripTarea (coincide con el PDF) y la habitación (su índice en el array de abajo, no tiene que coincidir con el PDF) en que la va a realizar el jugador
+    int numTarea, numHabitacion; // Aquí guardaremos el número de la descripcionTarea (coincide con el PDF) y la habitación (su índice en el array de abajo, no tiene que coincidir con el PDF) en que la va a realizar el jugador
 
-    char **descripTarea = (char **)malloc(sizeof(char **) * 8); // Este es el listado de las posibles tareas
-    descripTarea[0] = "Alinear la salida del motor";
-    descripTarea[1] = "Calibrar distribuidor";
-    descripTarea[2] = "Descargar datos/subir datos";
-    descripTarea[3] = "Desviar energia";
-    descripTarea[4] = "Encender escudos";
-    descripTarea[5] = "Estabilizar direccion";
-    descripTarea[6] = "Limpiar el filtro O2";
-    descripTarea[7] = "Mapa de navegacion";
+    char **descripcionTarea = (char **)malloc(sizeof(char **) * 8); // Este es el listado de las posibles tareas
+    descripcionTarea[0] = "Alinear la salida del motor";
+    descripcionTarea[1] = "Calibrar distribuidor";
+    descripcionTarea[2] = "Descargar datos/subir datos";
+    descripcionTarea[3] = "Desviar energia";
+    descripcionTarea[4] = "Encender escudos";
+    descripcionTarea[5] = "Estabilizar direccion";
+    descripcionTarea[6] = "Limpiar el filtro O2";
+    descripcionTarea[7] = "Mapa de navegacion";
 
     char **habitaciones = (char **)malloc(sizeof(char **) * 9); // Este es el listado de las habitaciones
     habitaciones[0] = "Armeria";
@@ -140,8 +140,8 @@ void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
 
-    numTarea = _aleatorio(1, 8);                                                                               // Elegimos una descripTarea al azar
-    strncpy(jugador->descripcionTarea, descripTarea[numTarea - 1], sizeof(char) * (strlen(descripTarea[numTarea - 1]) + 1)); // Copiamos la descripTarea en el campo descripcionTarea
+    numTarea = _aleatorio(1, 8);                                                                               // Elegimos una descripcionTarea al azar
+    strncpy(jugador->descripcionTarea, descripcionTarea[numTarea - 1], sizeof(char) * (strlen(descripcionTarea[numTarea - 1]) + 1)); // Copiamos la descripcionTarea en el campo descripcionTarea
 
     switch (numTarea)
     {
@@ -211,7 +211,9 @@ void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
         break;
     }
 
-    strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la descripTarea en el campo lugarTarea
+    strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la descripcionTarea en el campo lugarTarea
+    free(descripcionTarea);
+    free(habitaciones);
 }
 
 void _ejecutarTarea() {
@@ -448,4 +450,6 @@ void consultarPorHabitacion(abb Arbol)
     }
     numHabitacion--; // El índice en la lista de nombres es una unidad menos
     _imprimirPorHabitacion(Arbol, habitaciones[numHabitacion]);
+
+    free(habitaciones);
 }
