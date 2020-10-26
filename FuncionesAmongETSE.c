@@ -24,18 +24,25 @@ void _inicializarJugador(tipoelem *registro)
 }
 
 // Imprime los elementos de una cola de tareas
-void _imprimirTareas(cola* tareas) {
+void _imprimirTareas(cola *tareas)
+{
     cola colaAux;
     crear_cola(&colaAux);
     tipoelemCola elem;
-    while (!es_vacia_cola(*tareas)) {
+    printf("Tareas:\n");
+    while (!es_vacia_cola(*tareas)) // Vamos leyendo las tareas, para eso las metemos en una cola auxiliar
+    {
         elem = primero(*tareas);
+        printf("\t\t\t\t|%-30s| en |%-15s|\n", elem.descripcionTarea, elem.lugarTarea);
         suprimir_cola(tareas);
-        printf("Tarea: |%s| en |%s| ", elem.descripcionTarea, elem.lugarTarea);
         insertar_cola(&colaAux, elem);
     }
-    destruir_cola(tareas);
-    tareas = colaAux;
+    while (!es_vacia_cola(colaAux)) // Volvemos a meter las tareas de la cola auxiliar en la cola original
+    {
+        insertar_cola(tareas, primero(colaAux));
+        suprimir_cola(&colaAux);
+    }
+    destruir_cola(&colaAux);
 }
 
 //Función privada que imprime los datos de un jugador
@@ -44,12 +51,12 @@ void _imprimirJugador(tipoelem E)
     if (E.nombreJugador[0] != NO_ASIGNADO)
     {
         printf("%s", E.nombreJugador);
-    if (E.rol != NO_ASIGNADO)
-    {
-        printf("\tRol: %c", E.rol);
-        _imprimirTareas(&(E.tareas));
-    }
-    printf("\n");
+        if (E.rol != NO_ASIGNADO)
+        {
+            printf("\tRol: %c  ", E.rol);
+            _imprimirTareas(&(E.tareas));
+        }
+        printf("\n");
     }
     else
     {
@@ -80,11 +87,31 @@ int _numeroNodos(abb A)
 void _imprimirPorHabitacion(abb A, char *habitacion)
 {
     tipoelem jugador;
+    cola colaAux;
+    crear_cola(&colaAux);
+    tipoelemCola tarea;
+    int flag_imprimir = 0; // Lo usaremos para saber si hay que imprimir este jugador o no. Usamos un flag porque no imprimimos todo el jugador cada vez que encontramos una tarea que se desarrolle en la habitación buscada, sino que imprimimos el jugador una sola vez si alguna de las tareas se desarrolla en esa habitación.
     if (!es_vacio(A))
     {
         _imprimirPorHabitacion(izq(A), habitacion);
         leer(A, &jugador);
-        if (strcmp(jugador.lugarTarea, habitacion) == 0)
+        while (!es_vacia_cola(jugador.tareas)) // Vamos leyendo las tareas, para eso las metemos en una cola auxiliar
+        {
+            tarea = primero(jugador.tareas);
+            suprimir_cola(&(jugador.tareas));
+            insertar_cola(&colaAux, tarea);
+            if (strcmp(tarea.lugarTarea, habitacion) == 0)
+            {
+                flag_imprimir = 1;
+            }
+        }
+        while (!es_vacia_cola(colaAux)) // Volvemos a meter las tareas de la cola auxiliar en la cola original
+        {
+            insertar_cola(&(jugador.tareas), primero(colaAux));
+            suprimir_cola(&colaAux);
+        }
+        destruir_cola(&colaAux); // Liberamos la cola auxiliar
+        if (flag_imprimir == 1)
         {
             _imprimirJugador(jugador);
         }
@@ -115,7 +142,8 @@ void _buscarPorIndice(abb A, int indiceBuscado, tipoelem *resultado)
     free(indiceActual);
 }
 
-void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
+// Asigna únicamente una tarea
+void _asignarTarea(tipoelemCola *tarea)
 {
     int numTarea, numHabitacion; // Aquí guardaremos el número de la descripcionTarea (coincide con el PDF) y la habitación (su índice en el array de abajo, no tiene que coincidir con el PDF) en que la va a realizar el jugador
 
@@ -140,8 +168,8 @@ void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
 
-    numTarea = _aleatorio(1, 8);                                                                               // Elegimos una descripcionTarea al azar
-    strncpy(jugador->descripcionTarea, descripcionTarea[numTarea - 1], sizeof(char) * (strlen(descripcionTarea[numTarea - 1]) + 1)); // Copiamos la descripcionTarea en el campo descripcionTarea
+    numTarea = _aleatorio(1, 8);                                                                                                   // Elegimos una descripcionTarea al azar
+    strncpy(tarea->descripcionTarea, descripcionTarea[numTarea - 1], sizeof(char) * (strlen(descripcionTarea[numTarea - 1]) + 1)); // Copiamos la descripcionTarea en el campo descripcionTarea
 
     switch (numTarea)
     {
@@ -211,27 +239,41 @@ void _asignarTarea(tipoelem *jugador, tipoelemCola* tarea)
         break;
     }
 
-    strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la descripcionTarea en el campo lugarTarea
+    strncpy(tarea->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la descripcionTarea en el campo lugarTarea
     free(descripcionTarea);
     free(habitaciones);
 }
 
-void _ejecutarTarea() {
+// Coge un jugador y le asigna NUM_TAREAS a su cola de tareas
+void _asignarTareas(tipoelem jugador)
+{
+    int i = 0;
+    tipoelemCola tarea;
+    while (i < NUM_TAREAS)
+    {
+        _asignarTarea(&tarea);
+        insertar_cola(&(jugador.tareas), tarea);
+        i++;
+    }
+}
 
+void _ejecutarTarea()
+{
 }
 
 // Establece el rol de un jugador como 'K' (killed)
-void _matarJugador() {
-
+void _matarJugador()
+{
 }
 
 // Devuelve el número de tripulantes que hay en una habitación
-int _numTripulantesPorHabitacion(abb A, char* nombreHabitacion) {
-
+int _numTripulantesPorHabitacion(abb A, char *nombreHabitacion)
+{
 }
 
 // Elimina la descripTarea del primero de la cola de tareas del jugador
-void _siguienteTarea(tipoelem jugador) {
+void _siguienteTarea(tipoelem jugador)
+{
     suprimir_cola(&(jugador.tareas));
 }
 
@@ -366,7 +408,7 @@ void jugar(abb *Arbol)
                 {
                     jugador.rol = ROL_TRIPULANTE;
                 }
-                _asignarTarea(&jugador);
+                _asignarTareas(jugador);
                 insertar(&arbolJuego, jugador);
                 modificar(*Arbol, jugador);
                 contador++; // Insertamos el siguiente jugador
@@ -386,7 +428,7 @@ void jugar(abb *Arbol)
                 buscar_nodo(*Arbol, nombreJugador, &jugador);
                 if (!es_miembro(arbolJuego, jugador))
                 {
-                    _asignarTarea(&jugador);
+                    _asignarTareas(jugador);
                     insertar(&arbolJuego, jugador);
                     modificar(*Arbol, jugador);
                     contador++;
