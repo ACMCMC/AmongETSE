@@ -214,11 +214,6 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
     strncpy(jugador->lugarTarea, habitaciones[numHabitacion], sizeof(char) * (strlen(habitaciones[numHabitacion]) + 1)); // Copiamos la habitación de la tarea en el campo lugarTarea
 }
 
-// Recorre un árbol llamando a _inicializarJugador() en cada nodo
-void _limpiarDatos(abb A) {
-
-}
-
 void _ejecutarTarea() {
 
 }
