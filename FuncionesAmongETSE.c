@@ -24,7 +24,7 @@ void _imprimirJugador(tipoelem E)
 {
     if (E.descripcionTarea[0] != NO_ASIGNADO && E.lugarTarea[0] != NO_ASIGNADO && E.rol != NO_ASIGNADO)
     {
-        printf("%s\tRol: %c  Tarea: |%s\t| en |%s\t|\n", E.nombreJugador, E.rol, E.descripcionTarea, E.lugarTarea);
+        printf("%-15sRol: %c  Tarea: |%-30s| en |%-15s|\n", E.nombreJugador, E.rol, E.descripcionTarea, E.lugarTarea);
     }
     else if (E.nombreJugador[0] != NO_ASIGNADO)
     {
@@ -102,20 +102,20 @@ void _asignarTareaAleatoriamente(tipoelem *jugador)
     tarea[0] = "Alinear la salida del motor";
     tarea[1] = "Calibrar distribuidor";
     tarea[2] = "Descargar datos/subir datos";
-    tarea[3] = "Desviar energía";
+    tarea[3] = "Desviar energia";
     tarea[4] = "Encender escudos";
-    tarea[5] = "Estabilizar dirección";
+    tarea[5] = "Estabilizar direccion";
     tarea[6] = "Limpiar el filtro O2";
-    tarea[7] = "Mapa de navegación";
+    tarea[7] = "Mapa de navegacion";
 
     char **habitaciones = (char **)malloc(sizeof(char **) * 9); // Este es el listado de las habitaciones
-    habitaciones[0] = "Armería";
-    habitaciones[1] = "Cafetería";
+    habitaciones[0] = "Armeria";
+    habitaciones[1] = "Cafeteria";
     habitaciones[2] = "Comunicaciones";
     habitaciones[3] = "Electricidad";
     habitaciones[4] = "Escudos";
     habitaciones[5] = "Motores";
-    habitaciones[6] = "Navegación";
+    habitaciones[6] = "Navegacion";
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
 
@@ -280,16 +280,17 @@ void generarPartida(abb *Arbol)
         scanf("%d", &numJugadores);
     } while (!(numJugadores >= 4 && numJugadores <= 10));
 
-    opcion = '\0'; // Así nos saltamos este menú, ya que los jugadores se eligen automáticamente
+    opcion = 's'; // Así nos saltamos este menú, ya que los jugadores se eligen automáticamente
     while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N')
     {
         printf("Quieres hacer automáticamente el reparto de jugadores? (s/n): ");
         scanf(" %c", &opcion);
     }
 
+    numImpostores = round(numJugadores / 5.0); // Calculamos el número de impostores. Los x primeros jugadores que entren en el árbol serán impostores (esto podemos hacerlo porque entran en orden aleatorio, así que es lo mismo que que repartamos los roles después de que estén en el árbol)
+
     if (opcion == 's' || opcion == 'S')
     {                                              // Repartir los jugadores automáticamente
-        numImpostores = round(numJugadores / 5.0); // Calculamos el número de impostores. Los x primeros jugadores que entren en el árbol serán impostores (esto podemos hacerlo porque entran en orden aleatorio, así que es lo mismo que que repartamos los roles después de que estén en el árbol)
 
         printf("Jugadores seleccionados\n"); // Cuando elijamos a un jugador, iremos imprimiendo su nombre en la lista
 
@@ -309,18 +310,15 @@ void generarPartida(abb *Arbol)
                 }
                 _asignarTareaAleatoriamente(&jugador);
                 insertar(&arbolJuego, jugador);
+                modificar(*Arbol, jugador);
                 contador++; // Insertamos el siguiente jugador
                 printf("%s\n", jugador.nombreJugador);
             }
         }
 
-        printf("\nNúmero de impostores: %d\n", numImpostores);
-
-        printf("\nEstado final de los jugadores:\n");
-        listadoJugadores(arbolJuego);
     }
     else
-    { // Repartir los jugadores manualmente
+    { // Repartir los jugadores manualmente. No se admite en esta versión de la práctica.
         contador = 0;
         while (contador < numJugadores)
         {
@@ -331,6 +329,7 @@ void generarPartida(abb *Arbol)
                 if (!es_miembro(arbolJuego, jugador)) {
                     _asignarTareaAleatoriamente(&jugador);
                     insertar(&arbolJuego, jugador);
+                    modificar(*Arbol, jugador);
                     contador++;
                 }
             }
@@ -339,9 +338,12 @@ void generarPartida(abb *Arbol)
 
     }
 
-        printf("\nEstado final de los jugadores:\n");
-        listadoJugadores(arbolJuego);
-    destruir(&arbolJuego);
+    printf("\nNúmero de impostores: %d\n", numImpostores);
+
+    printf("\nEstado final de los jugadores:\n");
+    listadoJugadores(arbolJuego);
+
+    destruir(&arbolJuego); // Destruímos el árbol al final de la función, porque es local
 }
 
 //Función que imprime los datos de un usuario cuyo nombre se introduce por teclado
@@ -356,7 +358,7 @@ void consultarJugador(abb Arbol)
     }
     if (es_miembro(Arbol, registro))
     {
-        leer(Arbol, &registro);
+        buscar_nodo(Arbol, registro.nombreJugador, &registro);
         _imprimirJugador(registro);
     }
     else
@@ -370,13 +372,13 @@ void consultarPorHabitacion(abb Arbol)
 {
     int numHabitacion;
     char **habitaciones = (char **)malloc(sizeof(char **) * 9);
-    habitaciones[0] = "Armería";
-    habitaciones[1] = "Cafetería";
+    habitaciones[0] = "Armeria";
+    habitaciones[1] = "Cafeteria";
     habitaciones[2] = "Comunicaciones";
     habitaciones[3] = "Electricidad";
     habitaciones[4] = "Escudos";
     habitaciones[5] = "Motores";
-    habitaciones[6] = "Navegación";
+    habitaciones[6] = "Navegacion";
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
     for (numHabitacion = 0; numHabitacion < 9; numHabitacion++)
@@ -389,5 +391,6 @@ void consultarPorHabitacion(abb Arbol)
         printf("Selecciona ubicacion: ");
         scanf("%d", &numHabitacion);
     }
+    numHabitacion--; // El índice en la lista de nombres es una unidad menos
     _imprimirPorHabitacion(Arbol, habitaciones[numHabitacion]);
 }

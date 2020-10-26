@@ -5,7 +5,7 @@
 #include "FuncionesAmongETSE.h"
 
 
-int main(int argc, char** argv) {
+int main() {
     char opcion;
     
     srand((unsigned int) time(NULL)); //semilla para aleatorios, se llamar sólo una vez al principio de main
@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
 
 opcion = '\0';
     //Menú
-        printf("\nBienvenid@ a AmongETSE\n\ta. Alta de jugador@\n\tb. Baja de jugador@\n\tl. Listado de jugador@s por orden alfabético\n\tg. Generar datos partida\n\tu. Consulta por jugador@ de la última tarea asignada\n\th. Consulta jugador@s por habitación\n\ts. Salir de la aplicación\n");
     while(opcion != 's' && opcion != 'S') {
+        printf("\nBienvenid@ a AmongETSE\n\ta. Alta de jugador@\n\tb. Baja de jugador@\n\tl. Listado de jugador@s por orden alfabético\n\tg. Generar datos partida\n\tu. Consulta por jugador@ de la última tarea asignada\n\th. Consulta jugador@s por habitación\n\ts. Salir de la aplicación\n");
         printf("\nOpcion: ");
         scanf(" %c", &opcion);
         switch (opcion) {
@@ -58,6 +58,7 @@ opcion = '\0';
     }
     
     //Destruir el árbol al finalizar
+    destruir(&arbolJugadores);
 
     return (EXIT_SUCCESS);
 }
