@@ -12,17 +12,18 @@
 
 #define L_NOMBRE 15
 
-typedef char* tipoclave; //nombreJugador
+typedef char *tipoclave; //nombreJugador
 
-typedef struct {
+typedef struct
+{
     char nombreJugador[L_NOMBRE];
     char rol;
     cola tareas;
 } tipoelem;
 
 //////////////////////////////////////////FIN PARTE MODIFICABLE
-		
-typedef struct celda * abb;//tipo opaco
+
+typedef struct celda *abb; //tipo opaco
 
 /////////////////////////////// FUNCIONES
 
@@ -93,7 +94,7 @@ void insertar(abb *A, tipoelem E);
  * @param A
  * @param E
  */
-void suprimir(abb *A,tipoelem E);
+void suprimir(abb *A, tipoelem E);
 /**
  * Busca el nodo con clave la del nodo y lo modifica.
  * @param A
@@ -101,5 +102,4 @@ void suprimir(abb *A,tipoelem E);
  */
 void modificar(abb A, tipoelem nodo);
 
-#endif	// ABB_H
-
+#endif // ABB_H

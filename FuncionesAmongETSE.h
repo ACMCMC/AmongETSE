@@ -48,6 +48,4 @@ void consultarJugador(abb A);
  */
 void consultarPorHabitacion(abb A);
 
-
-#endif	// FUNCIONESAMONGETSE_H
-
+#endif // FUNCIONESAMONGETSE_H
