@@ -94,7 +94,7 @@ void _buscarPorIndice(abb A, int indiceBuscado, tipoelem *resultado)
     free(indiceActual);
 }
 
-void _asignarTareaAleatoriamente(tipoelem *jugador)
+void _asignarTarea(tipoelem *jugador)
 {
     int numTarea, numHabitacion; // Aquí guardaremos el número de la tarea (coincide con el PDF) y la habitación (su índice en el array de abajo, no tiene que coincidir con el PDF) en que la va a realizar el jugador
 
@@ -324,7 +324,7 @@ void generarPartida(abb *Arbol)
                 {
                     jugador.rol = ROL_TRIPULANTE;
                 }
-                _asignarTareaAleatoriamente(&jugador);
+                _asignarTarea(&jugador);
                 insertar(&arbolJuego, jugador);
                 modificar(*Arbol, jugador);
                 contador++; // Insertamos el siguiente jugador
@@ -344,7 +344,7 @@ void generarPartida(abb *Arbol)
                 buscar_nodo(*Arbol, nombreJugador, &jugador);
                 if (!es_miembro(arbolJuego, jugador))
                 {
-                    _asignarTareaAleatoriamente(&jugador);
+                    _asignarTarea(&jugador);
                     insertar(&arbolJuego, jugador);
                     modificar(*Arbol, jugador);
                     contador++;
