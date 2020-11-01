@@ -327,6 +327,7 @@ void _auxMatarJugPorIndiceHabitacion(abb A, int jugMatar, int *i, char rol, char
             {
                 jugador.rol = ROL_KILLED;
                 modificar(A, jugador);
+                printf("%d, %d\n", *i, jugMatar);
                 printf("Ha muerto %s.\n", jugador.nombreJugador);
             }
         }
@@ -596,8 +597,8 @@ void jugar(abb *Arbol)
                 contador++; // Insertamos el siguiente jugador
             }
         }
-        printf("\nJugadores seleccionados:\n");
-        _listadoNombresJugadores(arbolJuego);
+        //printf("\nJugadores seleccionados:\n");
+        //_listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
     }
     else
     { // Repartir los jugadores manualmente. No se admite en esta versión de la práctica.
@@ -659,10 +660,9 @@ void jugar(abb *Arbol)
     nombreJugador = (char*) malloc(sizeof(char) * (L_NOMBRE + 1));
     do
     {
-        printf("Jugadores y habitaciones:\n");
+        printf("Jugadores y ultimas habitaciones:\n");
         _listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
         _ejecutarTarea(arbolJuego);
-        _siguienteTarea(arbolJuego);
         contador = 0;
         do { // Le pedimos un nombre de jugador para eliminar al usuario
             printf("\nQuien es el impostor? ");
@@ -677,6 +677,7 @@ void jugar(abb *Arbol)
             }
         } while (contador != 1);
         victoria = _comprobarVictoria(arbolJuego);
+        _siguienteTarea(arbolJuego);
     } while (victoria == 0);
     free(nombreJugador);
 
