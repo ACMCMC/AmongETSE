@@ -16,11 +16,45 @@ unsigned int _aleatorio(int inf, int sup)
 {
     return (rand() % (sup - inf + 1)) + inf;
 }
+
+// Devuelve una cola con las tareas copiadas de otra
+cola _copiarTareas(cola colaTareas) {
+    cola newCola, colaAux; // Usamos dos colas, una auxiliar para vaciar allí las tareas de la cola original y otra que va a ser la cola nueva
+    crear_cola(&newCola);
+    crear_cola(&colaAux);
+    tipoelemCola elem;
+    while (!es_vacia_cola(colaTareas)) // Vaciamos las tareas en la cola auxiliar
+    {
+        elem = primero(colaTareas);
+        suprimir_cola(&colaTareas);
+        insertar_cola(&colaAux, elem);
+    }
+    while (!es_vacia_cola(colaAux)) // Volvemos a meter las tareas de la cola auxiliar en la cola original, y en la nueva
+    {
+        insertar_cola(&colaTareas, primero(colaAux));
+        insertar_cola(&newCola, primero(colaAux));
+        suprimir_cola(&colaAux);
+    }
+    destruir_cola(&colaAux);
+    return newCola;
+}
+
 //Función privada para inicializar los datos de un jugador, necesaria en varias funciones públicas
 void _inicializarJugador(tipoelem *registro)
 { //inicializa los campos rol,descripcionTarea y lugarTarea
     registro->rol = NO_ASIGNADO;
     crear_cola(&(registro->tareas));
+}
+
+void _guardarJugadoresArbol(FILE * fp, abb A) {
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _guardarJugadoresArbol(fp, izq(A));
+        leer(A, &jugador);
+        fprintf(fp, "%s\n", jugador.nombreJugador);
+        _guardarJugadoresArbol(fp, der(A));
+    }
 }
 
 // Imprime los elementos de una cola de tareas
@@ -50,10 +84,10 @@ void _imprimirJugador(tipoelem E)
 {
     if (E.nombreJugador[0] != NO_ASIGNADO)
     {
-        printf("%s", E.nombreJugador);
+        printf("%-15s", E.nombreJugador);
         if (E.rol != NO_ASIGNADO)
         {
-            printf("\tRol: %c  ", E.rol);
+            printf("  Rol: %c  ", E.rol);
             _imprimirTareas(&(E.tareas));
         }
         printf("\n");
@@ -285,6 +319,9 @@ void _limpiarDatos(abb A)
     {
         _limpiarDatos(izq(A));
         leer(A, &jugador);
+        if (jugador.tareas != NULL) {
+            destruir_cola(&(jugador.tareas));
+        }
         _inicializarJugador(&jugador);
         modificar(A, jugador);
         _limpiarDatos(der(A));
@@ -410,6 +447,7 @@ void jugar(abb *Arbol)
                 }
                 _asignarTareas(jugador);
                 insertar(&arbolJuego, jugador);
+                jugador.tareas = _copiarTareas(jugador.tareas); // Las tareas en el árbol orginal van a ser una copia de las de este arbol, no las mismas, porque como después eliminamos este árbol entonces tendríamos un segmentation fault si intentásemos acceder a las tareas de la cola original, porque estaría borrada
                 modificar(*Arbol, jugador);
                 contador++; // Insertamos el siguiente jugador
                 printf("%s\n", jugador.nombreJugador);
@@ -430,6 +468,7 @@ void jugar(abb *Arbol)
                 {
                     _asignarTareas(jugador);
                     insertar(&arbolJuego, jugador);
+                    jugador.tareas = _copiarTareas(jugador.tareas);
                     modificar(*Arbol, jugador);
                     contador++;
                 }
@@ -446,7 +485,7 @@ void jugar(abb *Arbol)
 }
 
 //Función que imprime los datos de un usuario cuyo nombre se introduce por teclado
-void consultarJugador(abb Arbol)
+void consultarTareaJugador(abb Arbol)
 {
     tipoelem registro;
     registro.nombreJugador[0] = NO_ASIGNADO;
@@ -458,7 +497,11 @@ void consultarJugador(abb Arbol)
     if (es_miembro(Arbol, registro))
     {
         buscar_nodo(Arbol, registro.nombreJugador, &registro);
-        _imprimirJugador(registro);
+        if (!es_vacia_cola(registro.tareas)) {
+            printf("Próxima tarea a realizar: |%-30s| en |%-15s|\n", primero(registro.tareas).descripcionTarea, primero(registro.tareas).lugarTarea);
+        } else {
+            printf("El jugador no tiene tareas asignadas.\n");
+        }
     }
     else
     {
@@ -494,4 +537,15 @@ void consultarPorHabitacion(abb Arbol)
     _imprimirPorHabitacion(Arbol, habitaciones[numHabitacion]);
 
     free(habitaciones);
+}
+
+void guardarArchivo(abb A) {
+    FILE *fp;
+    fp = fopen("jugadores.txt", "wt");
+    if (fp)
+    {
+        _guardarJugadoresArbol(fp, A);
+        fclose(fp);
+        printf("Jugadores guardados correctamente.\n");
+    }
 }

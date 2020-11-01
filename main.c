@@ -21,7 +21,7 @@ int main()
     //Menú
     while (opcion != 's' && opcion != 'S')
     {
-        printf("\nBienvenid@ a AmongETSE\n\ta. Alta de jugador@\n\tb. Baja de jugador@\n\tl. Listado de jugador@s por orden alfabético\n\tg. Generar datos partida\n\tu. Consulta por jugador@ de la última tarea asignada\n\th. Consulta jugador@s por habitación\n\ts. Salir de la aplicación\n");
+        printf("\nBienvenid@ a AmongETSE\n\ta. Alta de jugador@\n\tb. Baja de jugador@\n\tl. Listado de jugador@s por orden alfabético\n\tg. Jugar\n\tu. Consulta por jugador@ de la próxima tarea a realizar\n\th. Consulta jugador@s por habitación\n\tf. Guardar archivo\n\ts. Salir de la aplicación\n");
         printf("\nOpcion: ");
         scanf(" %c", &opcion);
         switch (opcion)
@@ -44,11 +44,15 @@ int main()
             break;
         case 'u':
         case 'U':
-            consultarJugador(arbolJugadores);
+            consultarTareaJugador(arbolJugadores);
             break;
         case 'h':
         case 'H':
             consultarPorHabitacion(arbolJugadores);
+            break;
+        case 'f':
+        case 'F':
+            guardarArchivo(arbolJugadores);
             break;
         case 's':
         case 'S':
@@ -58,7 +62,6 @@ int main()
             printf("Opción incorrecta.\n");
         }
     }
-
     //Destruir el árbol al finalizar
     destruir(&arbolJugadores);
 

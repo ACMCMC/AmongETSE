@@ -40,12 +40,18 @@ void jugar(abb *A);
  * Consulta los datos de un jugador
  * @param A
  */
-void consultarJugador(abb A);
+void consultarTareaJugador(abb A);
 
 /**
  * Consulta los jugadores que hay en una habitación
  * @param A
  */
 void consultarPorHabitacion(abb A);
+
+/**
+ * Guarda los jugadores en jugadores.txt
+ * @param A
+ */
+void guardarArchivo(abb A);
 
 #endif // FUNCIONESAMONGETSE_H

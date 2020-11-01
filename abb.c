@@ -36,7 +36,6 @@ int _comparar_claves(tipoclave cl1, tipoclave cl2)
  * permite hacer mas eficiente la destruccion del arbol.*/
 void _destruir_elem(tipoelem *E)
 {
-    //No se hace nada en la version 1
     destruir_cola(&(E->tareas));
 }
 
