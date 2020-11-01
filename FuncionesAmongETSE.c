@@ -92,14 +92,12 @@ void _imprimirTareas(cola *tareas)
 {
     cola colaAux;
     crear_cola(&colaAux);
-    tipoelemCola elem;
     printf("Tareas:\n");
     while (!es_vacia_cola(*tareas)) // Vamos leyendo las tareas, para eso las metemos en una cola auxiliar
     {
-        elem = primero(*tareas);
-        printf("\t\t\t\t|%-30s| en |%-15s|\n", elem.descripcionTarea, elem.lugarTarea);
+        printf("\t\t\t\t|%-30s| en |%-15s|\n", primero(*tareas).descripcionTarea, primero(*tareas).lugarTarea);
+        insertar_cola(&colaAux, primero(*tareas));
         suprimir_cola(tareas);
-        insertar_cola(&colaAux, elem);
     }
     while (!es_vacia_cola(colaAux)) // Volvemos a meter las tareas de la cola auxiliar en la cola original
     {
@@ -128,7 +126,8 @@ void _imprimirJugador(tipoelem E)
     }
 }
 
-int _numJugsPorHabitacion(abb A, char rol, char* habitacion) {
+int _numJugsPorHabitacion(abb A, char rol, char *habitacion)
+{
     int numero = 0;
     tipoelem jugador;
     if (!es_vacio(A))
@@ -198,7 +197,6 @@ void _imprimirPorHabitacion(abb A, char *habitacion)
         _imprimirPorHabitacion(der(A), habitacion);
     }
 }
-
 
 // Asigna únicamente una tarea
 void _asignarTarea(tipoelemCola *tarea)
@@ -315,36 +313,45 @@ void _asignarTareas(tipoelem jugador)
     }
 }
 
-int _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char* habitacion) {
-    int numero = 0;
+void _auxMatarJugPorIndiceHabitacion(abb A, int jugMatar, int *i, char rol, char *habitacion)
+{
     tipoelem jugador;
     if (!es_vacio(A))
     {
-        numero += _matarJugPorIndiceHabitacion(izq(A), jugMatar, rol, habitacion);
+        _auxMatarJugPorIndiceHabitacion(izq(A), jugMatar, i, rol, habitacion);
         leer(A, &jugador);
         if (jugador.rol == rol && strcmp(primero(jugador.tareas).lugarTarea, habitacion) == 0)
         {
-            numero++;
+            (*i)++;
+            if (*i == jugMatar)
+            {
+                jugador.rol = ROL_KILLED;
+                modificar(A, jugador);
+                printf("Ha muerto %s.\n", jugador.nombreJugador);
+            }
         }
-        if (numero == jugMatar) {
-            jugador.rol = ROL_KILLED;
-            modificar(A, jugador);
-            printf("Ha muerto %s.\n", jugador.nombreJugador);
-        }
-        numero += _matarJugPorIndiceHabitacion(der(A), jugMatar, rol, habitacion);
+        _auxMatarJugPorIndiceHabitacion(der(A), jugMatar, i, rol, habitacion);
     }
-    return numero;
+}
+
+void _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char *habitacion)
+{
+    int i = 0;
+    _auxMatarJugPorIndiceHabitacion(A, jugMatar, &i, rol, habitacion);
 }
 
 void _ejecutarTarea(abb A)
 {
     int i, numJugs, jugMatar;
     tipoelem jugador;
-    for (i = 0; i < _numeroNodos(A); i++) {
+    for (i = 0; i < _numeroNodos(A); i++)
+    {
         _buscarPorIndice(A, i, &jugador);
-        if (jugador.rol == ROL_IMPOSTOR) { // Por cada impostor...
+        if (jugador.rol == ROL_IMPOSTOR)
+        { // Por cada impostor...
             numJugs = _numJugsPorHabitacion(A, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
-            if (numJugs > 0) { // Miramos si hay algún tripulante en la habitación del impostor
+            if (numJugs > 0)
+            { // Miramos si hay algún tripulante en la habitación del impostor
                 jugMatar = _aleatorio(1, numJugs);
                 _matarJugPorIndiceHabitacion(A, jugMatar, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
             }
@@ -353,7 +360,8 @@ void _ejecutarTarea(abb A)
 }
 
 // Cuenta el número de jugadores de un árbol que tienen un rol determinado
-int _contarRol(abb A, char rol) {
+int _contarRol(abb A, char rol)
+{
     int numero = 0;
     tipoelem jugador;
     if (!es_vacio(A))
@@ -386,35 +394,38 @@ void _siguienteTarea(abb A)
     }
 }
 
-
 // Cuenta el número de jugadores de un árbol que tienen un rol determinado
-int _contarJugadoresConTareas(abb A, char rol) {
+int _contarJugadoresConTareas(abb A, char rol)
+{
     int numero = 0;
     tipoelem jugador;
     if (!es_vacio(A))
     {
-        numero += _contarRol(izq(A), rol);
+        numero += _contarJugadoresConTareas(izq(A), rol);
         leer(A, &jugador);
         if (jugador.rol == rol && !es_vacia_cola(jugador.tareas))
         {
             numero++;
         }
-        numero += _contarRol(der(A), rol);
+        numero += _contarJugadoresConTareas(der(A), rol);
     }
     return numero;
 }
 
-
 // Comprueba si se cumple alguna de las condiciones de victoria y, en ese caso, devuelve VICTORIA_IMPOSTORES, VICTORIA_TRIPULANTES o EMPATE. Si no, devuleve falso
-int _comprobarVictoria(abb A) {
-    if (_contarRol(A, ROL_IMPOSTOR) == 0) {
-        return(VICTORIA_TRIPULANTES);
+int _comprobarVictoria(abb A)
+{
+    if (_contarRol(A, ROL_IMPOSTOR) == 0)
+    {
+        return (VICTORIA_TRIPULANTES);
     }
-    if (_contarRol(A, ROL_TRIPULANTE) <= _contarRol(A, ROL_IMPOSTOR)) {
-        return(VICTORIA_IMPOSTORES);
+    if (_contarRol(A, ROL_TRIPULANTE) <= _contarRol(A, ROL_IMPOSTOR))
+    {
+        return (VICTORIA_IMPOSTORES);
     }
-    if (_contarJugadoresConTareas(A, ROL_TRIPULANTE) == 0) {
-        return(VICTORIA_TRIPULANTES);
+    if (_contarJugadoresConTareas(A, ROL_TRIPULANTE) == 0)
+    {
+        return (VICTORIA_TRIPULANTES);
     }
     return 0;
 }
@@ -506,14 +517,43 @@ void listadoJugadores(abb A)
     }
 }
 
+// Igual que listadoJugadores, pero imprimiendo sólo el nombre de los jugadores y la última habitación en la que han estado
+void _listadoJugadoresVivosYUltimasHabitaciones(abb A)
+{
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _listadoJugadoresVivosYUltimasHabitaciones(izq(A));
+        leer(A, &jugador);
+        if (jugador.rol == ROL_IMPOSTOR || jugador.rol == ROL_TRIPULANTE)
+        {
+            printf("%-15s: |%-15s|\n", jugador.nombreJugador, primero(jugador.tareas).lugarTarea);
+        }
+        _listadoJugadoresVivosYUltimasHabitaciones(der(A));
+    }
+}
+
+// Igual que listadoJugadores, pero imprimiendo sólo el nombre de los jugadores
+void _listadoNombresJugadores(abb A)
+{
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _listadoNombresJugadores(izq(A));
+        leer(A, &jugador);
+        printf("%s\n", jugador.nombreJugador);
+        _listadoNombresJugadores(der(A));
+    }
+}
+
 //Función que genera los datos de una partida: jugadores, roles y tareas
 void jugar(abb *Arbol)
 {
     int numJugadores, numImpostores, contador, victoria; // Variables auxiliares que usaremos para hacer la asignación
-    char opcion;                               // Para el menú
-    tipoelem jugador;                          // Variable auxiliar para almacenar un jugador (se reasignará según sea conveniente)
-    abb arbolJuego;                            // Aquí guardaremos los jugadores de la partida
-    crear(&arbolJuego);                        // Creamos el árbol de los jugadores de la partida
+    char opcion;                                         // Para el menú
+    tipoelem jugador;                                    // Variable auxiliar para almacenar un jugador (se reasignará según sea conveniente)
+    abb arbolJuego;                                      // Aquí guardaremos los jugadores de la partida
+    crear(&arbolJuego);                                  // Creamos el árbol de los jugadores de la partida
     char *nombreJugador = NULL;
 
     _limpiarDatos(*Arbol); // Limpiamos el árbol antes de generar una nueva partida
@@ -535,8 +575,6 @@ void jugar(abb *Arbol)
     if (opcion == 's' || opcion == 'S')
     { // Repartir los jugadores automáticamente
 
-        printf("\nJugadores seleccionados\n"); // Cuando elijamos a un jugador, iremos imprimiendo su nombre en la lista
-
         contador = 0;
         while (contador < numJugadores)
         {
@@ -556,16 +594,17 @@ void jugar(abb *Arbol)
                 jugador.tareas = _copiarTareas(jugador.tareas); // Las tareas en el árbol orginal van a ser una copia de las de este arbol, no las mismas, porque como después eliminamos este árbol entonces tendríamos un segmentation fault si intentásemos acceder a las tareas de la cola original, porque estaría borrada
                 modificar(*Arbol, jugador);
                 contador++; // Insertamos el siguiente jugador
-                printf("%s\n", jugador.nombreJugador);
             }
         }
+        printf("\nJugadores seleccionados:\n");
+        _listadoNombresJugadores(arbolJuego);
     }
     else
     { // Repartir los jugadores manualmente. No se admite en esta versión de la práctica.
         contador = 0;
         while (contador < numJugadores)
         {
-            nombreJugador = (char*) malloc(sizeof(char) * (L_NOMBRE + 1)); // Reservamos memoria para guardar el nombre del jugador
+            nombreJugador = (char *)malloc(sizeof(char) * (L_NOMBRE + 1)); // Reservamos memoria para guardar el nombre del jugador
             printf("Nombre de jugador: ");
             scanf(" %s", nombreJugador);
             if (nombreJugador[0] == '@')
@@ -596,9 +635,11 @@ void jugar(abb *Arbol)
         }
 
         contador = 0;
-        while (contador < numImpostores) { // Asignamos aleatoriamente los roles de impostor
+        while (contador < numImpostores)
+        {                                                                        // Asignamos aleatoriamente los roles de impostor
             _buscarPorIndice(arbolJuego, _aleatorio(1, numJugadores), &jugador); // Buscamos el jugador que en un recorrido inorden está en la posición que devuelve _aleatorio(1, _numeroNodos(*Arbol))
-            if (jugador.rol != ROL_IMPOSTOR) {
+            if (jugador.rol != ROL_IMPOSTOR)
+            {
                 jugador.rol = ROL_IMPOSTOR;
                 modificar(arbolJuego, jugador); // Modificamos el rol en el árbol local de esta función
                 contador++;
@@ -612,13 +653,41 @@ void jugar(abb *Arbol)
 
     printf("\nNúmero de impostores: %d\n", numImpostores);
 
-    printf("\nEstado final de los jugadores:\n");
-    listadoJugadores(arbolJuego);
+    //printf("\nEstado final de los jugadores:\n");
+    //listadoJugadores(arbolJuego);
 
-    do {
+    nombreJugador = (char*) malloc(sizeof(char) * (L_NOMBRE + 1));
+    do
+    {
+        printf("Jugadores y habitaciones:\n");
+        _listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
         _ejecutarTarea(arbolJuego);
+        _siguienteTarea(arbolJuego);
+        contador = 0;
+        do { // Le pedimos un nombre de jugador para eliminar al usuario
+            printf("\nQuien es el impostor? ");
+            scanf(" %s", nombreJugador);
+            if (nombreJugador[0] == '@') {
+                buscar_nodo(arbolJuego, nombreJugador, &jugador);
+                if (strcmp(nombreJugador, jugador.nombreJugador) == 0) { // Si hemos encontrado el jugador...
+                    jugador.rol = ROL_KILLED;
+                    modificar(arbolJuego, jugador);
+                    contador = 1;
+                }
+            }
+        } while (contador != 1);
         victoria = _comprobarVictoria(arbolJuego);
     } while (victoria == 0);
+    free(nombreJugador);
+
+    if (victoria == VICTORIA_IMPOSTORES)
+    {
+        printf("\nHan ganado los impostores.\n");
+    }
+    else if (victoria == VICTORIA_TRIPULANTES)
+    {
+        printf("\nHan ganado los tripulantes.\n");
+    }
 
     destruir(&arbolJuego); // Destruímos el árbol al final de la función, porque es local
 }
