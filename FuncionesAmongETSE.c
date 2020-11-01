@@ -345,18 +345,20 @@ void _ejecutarTarea(abb A)
 {
     int i, numJugs, jugMatar;
     tipoelem jugador;
-    for (i = 0; i < _numeroNodos(A); i++)
-    {
-        _buscarPorIndice(A, i, &jugador);
+    if(!es_vacio(A)) {
+        _ejecutarTarea(izq(A));
+        leer(A, &jugador);
         if (jugador.rol == ROL_IMPOSTOR)
         { // Por cada impostor...
             numJugs = _numJugsPorHabitacion(A, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
+            printf("IMPOS %s, %d\n", jugador.nombreJugador, numJugs);
             if (numJugs > 0)
             { // Miramos si hay algún tripulante en la habitación del impostor
                 jugMatar = _aleatorio(1, numJugs);
                 _matarJugPorIndiceHabitacion(A, jugMatar, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
             }
         }
+        _ejecutarTarea(der(A));
     }
 }
 
