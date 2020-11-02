@@ -598,7 +598,7 @@ void jugar(abb *Arbol)
     {
         printf("Número de participantes (4-10): ");
         scanf(" %d", &numJugadores);
-    } while (!(numJugadores >= 4 && numJugadores <= 15));
+    } while (!(numJugadores >= 4 && numJugadores <= 10));
 
     do
     {
@@ -690,7 +690,7 @@ void jugar(abb *Arbol)
     nombreJugador = (char *)malloc(sizeof(char) * (L_NOMBRE + 1));
     do
     {
-        printf("Jugadores y ultimas habitaciones:\n");
+        printf("\nJugadores        |Ultima habitac.|\n----------------------------------\n");
         _listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
         printf("\n");
         _ejecutarTarea(arbolJuego);
