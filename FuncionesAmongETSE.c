@@ -653,7 +653,7 @@ void jugar(abb *Arbol)
             if (nombreJugador[0] == '@')
             {
                 buscar_nodo(*Arbol, nombreJugador, &jugador);
-                if (es_miembro(*Arbol, jugador))
+                if (strcmp(jugador.nombreJugador, nombreJugador) == 0 && es_miembro(*Arbol, jugador))
                 {
                     if (!es_miembro(arbolJuego, jugador))
                     {
