@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.html": "html",
-        "*.h": "c",
-        "*.c": "c",
-        "__locale": "c",
-        "cstring": "c"
-    }
-}
