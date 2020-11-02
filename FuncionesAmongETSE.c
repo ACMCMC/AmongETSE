@@ -359,19 +359,29 @@ void _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char *habitacio
     _auxMatarJugPorIndiceHabitacion(A, jugMatar, &i, rol, habitacion);
 }
 
+// Recorremos todo el árbol de jugadores buscando a los impostores, y por cada uno matamos a algún jugador (o no). El recorrido es un pseudo-postorden, porque hacemos IDR (postorden) o DIR (postorden modificado), aleatoriamente
 void _auxEjecutarTarea(abb arbolJugadores, abb arbolRecorrido)
 {
     int numJugs, jugMatar;
     tipoelem jugador;
     if (!es_vacio(arbolRecorrido))
     {
-        _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
+        if (_aleatorio(1, 2) == 1)
+        {
+            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
+            _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
+        }
+        else
+        {
+            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
+            _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
+        }
         leer(arbolRecorrido, &jugador);
         if (jugador.rol == ROL_IMPOSTOR && !es_vacia_cola(jugador.tareas))
         { // Por cada impostor...
             numJugs = _numJugsPorHabitacion(arbolJugadores, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
-            if (numJugs > 0)
-            { // Miramos si hay algún tripulante en la habitación del impostor
+            if (numJugs > 1)
+            { // Miramos si hay algún tripulante en la habitación del impostor. Solo lo matamos si hay más de uno, porque si solo hay dos jugadores el impostor se delata
                 if (_aleatorio(1, 3) != 1)
                 { // Sucederá 2/3 de las veces, es decir, el impostor no siempre matará a alguien en su habitación
                     jugMatar = _aleatorio(1, numJugs);
@@ -379,7 +389,6 @@ void _auxEjecutarTarea(abb arbolJugadores, abb arbolRecorrido)
                 }
             }
         }
-        _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
     }
 }
 
@@ -705,6 +714,8 @@ void jugar(abb *Arbol)
                 if (jugador.rol == ROL_IMPOSTOR || jugador.rol == ROL_TRIPULANTE) // El jugador tiene que estar vivo
                 {
                     _matarJugador(jugador, arbolJuego);
+                } else {
+                    printf("Ese jugador ya está muerto. No se ha matado a nadie.\n");
                 }
             }
         }
@@ -713,8 +724,8 @@ void jugar(abb *Arbol)
             printf("No se ha matado a nadie.\n");
         }
 
-        victoria = _comprobarVictoria(arbolJuego);
         _siguienteTarea(arbolJuego);
+        victoria = _comprobarVictoria(arbolJuego);
     } while (victoria == 0);
     free(nombreJugador);
 

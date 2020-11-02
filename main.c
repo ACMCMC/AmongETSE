@@ -1,3 +1,13 @@
+/*
+Modificaciones con respecto a la especificación:
+
+- Un impostor solo mata a un tripulante si en la habitación en la que está hay más de un tripulante (ya que si solo estuvieran el impostor y un tripulante, se habría delatado).
+- El archivo con los nombres de los jugadores es jugadores.txt
+- Los impostores solo matan a otros jugadores el 66% de las veces
+- "Consultar por habitación" devuelve todos los jugadores que tengan al menos una de sus tareas en esa habitación
+- Al matar a los jugadores, se recorre aleatoriamente el árbol. De esta forma, hacemos el juego más impredecible, ya que si se recorriese haciendo un recorrido estándar, sabríamos que los primeros jugadores en morir se corresponden con los primeros impostores de la lista (en el caso del inorden). Si recorremos el árbol de forma aleatoria, entonces no se puede predecir esto.
+
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
