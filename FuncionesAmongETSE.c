@@ -699,11 +699,15 @@ void jugar(abb *Arbol)
     nombreJugador = (char *)malloc(sizeof(char) * (L_NOMBRE + 1));
     do
     {
-        printf("\nJugadores        |Ultima habitac.|\n----------------------------------\n");
+        printf("\n\nJugadores        |Ultima habitac.|\n----------------------------------\n");
         _listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
         printf("\n");
+        contador = _contarRol(arbolJuego, ROL_KILLED);
         _ejecutarTarea(arbolJuego);
 
+        if (contador == _contarRol(arbolJuego, ROL_KILLED)) {
+            printf("No ha muerto nadie.\n");
+        }
         printf("\nQuien es el impostor? ");
         scanf(" %s", nombreJugador); // Le pedimos un nombre de jugador para eliminar al usuario, si no es un nombre válido se supone que queremos pasar el turno
         if (nombreJugador[0] == '@')
