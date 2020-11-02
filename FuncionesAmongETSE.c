@@ -75,15 +75,16 @@ void _buscarPorIndice(abb A, int indiceBuscado, tipoelem *resultado)
     free(indiceActual);
 }
 
+// Hacemos un recorrido en preorden del arbol guardando los jugadores en el archivo
 void _guardarJugadoresArbol(FILE *fp, abb A)
 {
     tipoelem jugador;
     if (!es_vacio(A))
     {
-        _guardarJugadoresArbol(fp, izq(A));
         leer(A, &jugador);
         fprintf(fp, "%s\n", jugador.nombreJugador);
         _guardarJugadoresArbol(fp, der(A));
+        _guardarJugadoresArbol(fp, izq(A));
     }
 }
 
@@ -134,8 +135,10 @@ int _numJugsPorHabitacion(abb A, char rol, char *habitacion)
     {
         numero += _numJugsPorHabitacion(izq(A), rol, habitacion);
         leer(A, &jugador);
+            printf("JUG %s:\t%c, %d\n", jugador.nombreJugador, jugador.rol, numero);
         if (jugador.rol == rol && !es_vacia_cola(jugador.tareas) && strcmp(primero(jugador.tareas).lugarTarea, habitacion) == 0)
         {
+            printf("COINCIDE\n");
             numero++;
         }
         numero += _numJugsPorHabitacion(der(A), rol, habitacion);
@@ -341,26 +344,30 @@ void _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char *habitacio
     _auxMatarJugPorIndiceHabitacion(A, jugMatar, &i, rol, habitacion);
 }
 
-void _ejecutarTarea(abb A)
-{
-    int i, numJugs, jugMatar;
+void _auxEjecutarTarea(abb arbolJugadores, abb arbolRecorrido) {
+    int numJugs, jugMatar;
     tipoelem jugador;
-    if (!es_vacio(A))
+    if (!es_vacio(arbolRecorrido))
     {
-        _ejecutarTarea(izq(A));
-        leer(A, &jugador);
+        _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
+        leer(arbolRecorrido, &jugador);
         if (jugador.rol == ROL_IMPOSTOR && !es_vacia_cola(jugador.tareas))
         { // Por cada impostor...
-            numJugs = _numJugsPorHabitacion(A, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
-            printf("IMPOS %s, %d\n", jugador.nombreJugador, numJugs);
+            numJugs = _numJugsPorHabitacion(arbolJugadores, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
+            printf("NUMERO DE JUGADORES: %d\n", numJugs);
             if (numJugs > 0)
             { // Miramos si hay algún tripulante en la habitación del impostor
                 jugMatar = _aleatorio(1, numJugs);
-                _matarJugPorIndiceHabitacion(A, jugMatar, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
+                _matarJugPorIndiceHabitacion(arbolJugadores, jugMatar, ROL_TRIPULANTE, primero(jugador.tareas).lugarTarea);
             }
         }
-        _ejecutarTarea(der(A));
+        _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
     }
+}
+
+void _ejecutarTarea(abb A)
+{
+    _auxEjecutarTarea(A, A);
 }
 
 // Cuenta el número de jugadores de un árbol que tienen un rol determinado
@@ -573,7 +580,7 @@ void jugar(abb *Arbol)
     {
         printf("Número de participantes (4-10): ");
         scanf(" %d", &numJugadores);
-    } while (!(numJugadores >= 4 && numJugadores <= 10));
+    } while (!(numJugadores >= 4 && numJugadores <= 15));
 
     do
     {
