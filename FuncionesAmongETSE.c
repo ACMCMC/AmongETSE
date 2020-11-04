@@ -373,8 +373,8 @@ void _auxEjecutarTarea(abb arbolJugadores, abb arbolRecorrido)
         }
         else
         {
-            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
             _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
+            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
         }
         leer(arbolRecorrido, &jugador);
         if (jugador.rol == ROL_IMPOSTOR && !es_vacia_cola(jugador.tareas))
@@ -607,7 +607,7 @@ void jugar(abb *Arbol)
     {
         printf("Número de participantes (4-10): ");
         scanf(" %d", &numJugadores);
-    } while (!(numJugadores >= 4 && numJugadores <= 10));
+    } while (!(numJugadores >= 4 && numJugadores <= 15));
 
     do
     {
