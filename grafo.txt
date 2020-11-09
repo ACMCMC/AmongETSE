@@ -1,0 +1,9 @@
+Reactor
+MotorSuperior
+MotorInferior
+Seguridad
+Enfermeria
+Electricidad
+*
+MotorSuperior..1-Reactor
+Enfermeria..1-Seguridad

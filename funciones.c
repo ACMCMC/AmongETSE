@@ -164,18 +164,18 @@ void leerArchivoGrafo(grafo *G)
 {
     tipovertice vertice, v1, v2;
     FILE *fp;
-    fp = fopen("grafo.txt", "r");
+    fp = fopen("grafo.txt", "r"); // Abrimos el archivo en modo lectura
     char codigos[3]; // Vale 3 porque tenemos dos caracteres, y un '\0'
     int valor;
     if (fp)
     {
-        while ((fscanf(fp, "%s", vertice.habitacion), vertice.habitacion[0] != '\0' && vertice.habitacion[0] != '*' && vertice.habitacion[1] != '\0'))
+        while (fscanf(fp, "%s", vertice.habitacion) != EOF && vertice.habitacion[0] != '\0' && vertice.habitacion[0] != '*' && vertice.habitacion[1] != '\0')
         {
             insertar_vertice(G, vertice);
         }
         while (!feof(fp))
         {
-            fscanf(fp, " %[^-.]%[-.]%d-%s", v1.habitacion, codigos, &valor, v2.habitacion);
+            fscanf(fp, " %[^-.]%[-.]%d-%s", v1.habitacion, codigos, &valor, v2.habitacion); // Leemos una línea de las conexiones del archivo
             if (existe_vertice(*G, v1) && existe_vertice(*G, v2))
             {
                 if (strcmp(codigos, "..") == 0)
@@ -196,7 +196,7 @@ void leerArchivoGrafo(grafo *G)
                 fprintf(stderr, "ERROR leyendo el archivo. El vértice %s no existe.\n", !existe_vertice(*G, v1) ? v1.habitacion : v2.habitacion);
             }
         }
-        fclose(fp);
+        fclose(fp); // Cerramos el archivo, no es necesario liberar memoria
     }
 }
 
@@ -205,7 +205,7 @@ void guardarArchivoGrafo(grafo G)
     int i, j;
     tipovertice *VECTOR;
     FILE *fp;
-    fp = fopen("grafo.txt", "w");
+    fp = fopen("grafo.txt", "w"); // Abrimos el archivo en modo escritura
     if (fp)
     {
         VECTOR = array_vertices(G);
@@ -226,6 +226,6 @@ void guardarArchivoGrafo(grafo G)
                     fprintf(fp, "%s--%d-%s\n", VECTOR[i].habitacion, son_adyacentes_T(G, i, j), VECTOR[j].habitacion);
                 }
         }
-        fclose(fp);
+        fclose(fp); // Cerramos el archivo, no necesitamos liberar memoria
     }
 }
