@@ -20,7 +20,11 @@ void eliminar_arco(grafo *G);
 //Opción i del menú, imprimir el grafo
 void imprimir_grafo(grafo G);
 
+//Se ejecuta al principio del programa, rellena el grafo con los datos de un archivo
 void leerArchivoGrafo(grafo *G);
+
+//Opción f del menú, guarda el grafo en un archivo
+void guardarArchivoGrafo(grafo G);
 
 
 #endif	/* FUNCIONES_H */

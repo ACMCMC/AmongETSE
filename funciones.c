@@ -198,3 +198,33 @@ void leerArchivoGrafo(grafo *G)
         fclose(fp);
     }
 }
+
+void guardarArchivoGrafo(grafo G)
+{
+    int i, j;
+    tipovertice *VECTOR;
+    FILE *fp;
+    fp = fopen("grafo.txt", "w");
+    if (fp)
+    {
+        VECTOR = array_vertices(G);
+        for (i = 0; i < num_vertices(G); i++) {
+            fprintf(fp, "%s\n", VECTOR[i].habitacion);
+        }
+        fprintf(fp, "*\n");
+        for (i = 0; i < num_vertices(G); i++)
+        {
+            //Chequeo sus arcos
+            for (j = 0; j < i; j++)
+                if (son_adyacentes_I(G, i, j))
+                { // Si dos vértices son adyacentes en la matriz de adyacencia de impostores, entonces tendrán menos distancia que en la de adyacencia de tripulantes (por la semántica del proyecto). Por eso, si un arco existe en esta matriz de adyacencia, no lo imprimimos otra vez si existe en la de tripulantes.
+                    fprintf(fp, "%s..%d-%s\n", VECTOR[i].habitacion, son_adyacentes_I(G, i, j), VECTOR[j].habitacion);
+                }
+                else if (son_adyacentes_T(G, i, j))
+                {
+                    fprintf(fp, "%s--%d-%s\n", VECTOR[i].habitacion, son_adyacentes_T(G, i, j), VECTOR[j].habitacion);
+                }
+        }
+        fclose(fp);
+    }
+}

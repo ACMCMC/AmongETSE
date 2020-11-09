@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
         printf("b. Eliminar vertice\n");
         printf("c. Crear arco\n");
         printf("d. Eliminar arco\n");
+        printf("f. Guardar grafo\n");
         printf("i. Imprimir grafo\n");
         printf("s. Salir\n");
 
@@ -41,6 +42,9 @@ int main(int argc, char** argv) {
                 break;
             case 'i': case 'I':
                 imprimir_grafo(G);
+                break;
+            case 'f': case 'F':
+                guardarArchivoGrafo(G);
                 break;
             case 's': case 'S':
                 opcion='s';
