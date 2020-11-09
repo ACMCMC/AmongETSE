@@ -159,6 +159,7 @@ void imprimir_grafo(grafo G)
     }
 }
 
+// Opción f del menú, guarda el grafo en un archivo
 void leerArchivoGrafo(grafo *G)
 {
     tipovertice vertice, v1, v2;
