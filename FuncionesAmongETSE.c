@@ -359,23 +359,15 @@ void _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char *habitacio
     _auxMatarJugPorIndiceHabitacion(A, jugMatar, &i, rol, habitacion);
 }
 
-// Recorremos todo el árbol de jugadores buscando a los impostores, y por cada uno matamos a algún jugador (o no). El recorrido es un pseudo-postorden, porque hacemos IDR (postorden) o DIR (postorden modificado), aleatoriamente
+// Recorremos todo el árbol de jugadores buscando a los impostores, y por cada uno matamos a algún jugador (o no), depende de un factor aleatorio
 void _auxEjecutarTarea(abb arbolJugadores, abb arbolRecorrido)
 {
     int numJugs, jugMatar;
     tipoelem jugador;
     if (!es_vacio(arbolRecorrido))
     {
-        if (_aleatorio(1, 2) == 1)
-        {
-            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
-            _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
-        }
-        else
-        {
-            _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
-            _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
-        }
+        _auxEjecutarTarea(arbolJugadores, izq(arbolRecorrido));
+        _auxEjecutarTarea(arbolJugadores, der(arbolRecorrido));
         leer(arbolRecorrido, &jugador);
         if (jugador.rol == ROL_IMPOSTOR && !es_vacia_cola(jugador.tareas))
         { // Por cada impostor...
@@ -607,7 +599,7 @@ void jugar(abb *Arbol)
     {
         printf("Número de participantes (4-10): ");
         scanf(" %d", &numJugadores);
-    } while (!(numJugadores >= 4 && numJugadores <= 15));
+    } while (!(numJugadores >= 4 && numJugadores <= 10));
 
     do
     {

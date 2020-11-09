@@ -1,0 +1,12 @@
+#ifndef CONSTANTESAMONGETSE_H
+#define CONSTANTESAMONGETSE_H
+
+#define L_DESC_TAREA 30
+#define L_HABITACION 15
+#define L_NOMBRE 15
+
+#define L_LINEA_ARCHIVO 100
+
+#define NUM_TAREAS 5
+
+#endif

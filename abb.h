@@ -3,14 +3,14 @@
 
 #include "cola.h"
 
+#include "ConstantesAmongETSE.h"
+
 /**
  * Tipo de dato abstracto para arbol binario con clave de
  * ordenacion y elemento de celda.
  */
 
 ///////////////////////////////////////INICIO PARTE MODIFICABLE
-
-#define L_NOMBRE 15
 
 typedef char *tipoclave; //nombreJugador
 

@@ -1,8 +1,7 @@
 #ifndef COLA_H
 #define COLA_H
 
-#define L_DESC_TAREA 30
-#define L_LUG_TAREA 15
+#include "ConstantesAmongETSE.h"
 
 //////////////////////// ESTRUCTURAS DE DATOS
 
@@ -13,7 +12,7 @@ typedef struct tipocola *cola; /*tipo opaco*/
 //////////////////////////////////////////INICIO PARTE MODIFICABLE
 // Tipo de elemento de la cola. 
 typedef struct {
-    char lugarTarea[L_LUG_TAREA];
+    char lugarTarea[L_HABITACION];
     char descripcionTarea[L_DESC_TAREA];
 } tipoelemCola;
 //////////////////////////////////////////FIN PARTE MODIFICABLE
