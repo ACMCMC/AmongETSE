@@ -53,8 +53,8 @@ void borrar_arco_T(grafo *G, int pos1, int pos2);
 void borrar_arco_I(grafo *G, int pos1, int pos2);
 
 //Devuelve la distancia entre VERTICES(pos1) y VERTICES(pos2), si son vértices adyacentes
-int son_adyacentes_T(grafo G, int pos1, int pos2);
-int son_adyacentes_I(grafo G, int pos1, int pos2);
+int distancia_T(grafo G, int pos1, int pos2);
+int distancia_I(grafo G, int pos1, int pos2);
 
 //Destruye el grafo
 void borrar_grafo(grafo *G);

@@ -122,10 +122,10 @@ void borrar_arco_I(grafo *G, int pos1, int pos2) {
 }
 
 //Devuelve 1 si VERTICES(pos1) y VERTICES(pos2) son vértices adyacentes
-int son_adyacentes_T(grafo G, int pos1, int pos2) {
+int distancia_T(grafo G, int pos1, int pos2) {
     return (G->AT[pos1][pos2]);
 }
-int son_adyacentes_I(grafo G, int pos1, int pos2) {
+int distancia_I(grafo G, int pos1, int pos2) {
     return (G->AI[pos1][pos2]);
 }
 
