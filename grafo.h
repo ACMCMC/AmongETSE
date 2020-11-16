@@ -52,7 +52,7 @@ void crear_arco_I(grafo *G, int pos1, int pos2, int valor);
 void borrar_arco_T(grafo *G, int pos1, int pos2);
 void borrar_arco_I(grafo *G, int pos1, int pos2);
 
-//Devuelve 1 si VERTICES(pos1) y VERTICES(pos2) son vértices adyacentes
+//Devuelve la distancia entre VERTICES(pos1) y VERTICES(pos2), si son vértices adyacentes
 int son_adyacentes_T(grafo G, int pos1, int pos2);
 int son_adyacentes_I(grafo G, int pos1, int pos2);
 

@@ -20,8 +20,10 @@ int main(int argc, char** argv) {
         printf("b. Eliminar vertice\n");
         printf("c. Crear arco\n");
         printf("d. Eliminar arco\n");
+        printf("e. Arbol de expansion de coste minimo\n");
         printf("f. Guardar grafo\n");
         printf("i. Imprimir grafo\n");
+        printf("r. Ruta mas corta\n");
         printf("s. Salir\n");
 
         printf("Opcion: ");
@@ -40,11 +42,17 @@ int main(int argc, char** argv) {
             case 'd': case 'D':
                 eliminar_arco(&G);
                 break;
+            case 'e': case 'E':
+                arbolExpansion(G);
+                break;
             case 'i': case 'I':
                 imprimir_grafo(G);
                 break;
             case 'f': case 'F':
                 guardarArchivoGrafo(G);
+                break;
+            case 'r': case 'R':
+                rutaMasCorta(G);
                 break;
             case 's': case 'S':
                 opcion='s';

@@ -26,6 +26,12 @@ void leerArchivoGrafo(grafo *G);
 //Opción f del menú, guarda el grafo en un archivo
 void guardarArchivoGrafo(grafo G);
 
+//Calcula la ruta más corta entre dos vértices usando el algoritmo de Floyd-Warshall
+void rutaMasCorta(grafo G);
+
+//Calcula el árbol de expansión de coste mínimo usando el algoritmo de Prim
+void arbolExpansion(grafo G);
+
 
 #endif	/* FUNCIONES_H */
 

@@ -7,8 +7,45 @@
 
 //FUNCIONES DEL PROGRAMA DE PRUEBA DE GRAFOS
 
-//Opción a del menú, introducir un vertice en el grafo
+struct camino {
+    int verticePrevio;
+    char mapa;
+};
 
+void _floyd(grafo G, int origen, int destino, char tipo) {
+    //////////////////////////////////////////////////////////////////
+    //
+    // Inicialización de matrices
+    //
+    //////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////
+    //
+    // Búsqueda de distancias
+    //
+    // Buscamos la distancia mínima de forma iterativa, empezando por
+    // el primer vértice, 
+    //
+    //////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////
+    // Inicialización de matrices
+    //////////////////////////////////////////////////////////////////
+}
+
+void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N) {
+
+}
+
+void _printSolution(int matrix[][MAXVERTICES], int N) {
+
+}
+
+void _printPrevVertex(struct camino P[][MAXVERTICES], int N) {
+
+}
+
+//Opción a del menú, introducir un vertice en el grafo
 void introducir_vertice(grafo *G)
 {
     tipovertice v1;
@@ -19,8 +56,8 @@ void introducir_vertice(grafo *G)
     else
         insertar_vertice(G, v1);
 }
-//Opción b del menú, eliminar un vértice del grafo
 
+//Opción b del menú, eliminar un vértice del grafo
 void eliminar_vertice(grafo *G)
 {
     tipovertice v1;
@@ -141,21 +178,22 @@ void imprimir_grafo(grafo G)
     VECTOR = array_vertices(G);
 
     int i, j;
-    printf("El grafo actual es:\n");
+    printf("El mapa actual es:\n");
     for (i = 0; i < N; i++)
     {
         //Imprimo el vértice
-        printf("Vertice(%d): %s\n", i, VECTOR[i].habitacion);
+        printf("Habitacion(%d): %s\n", i, VECTOR[i].habitacion);
         //Chequeo sus arcos
-        for (j = 0; j < N; j++)
-            if (son_adyacentes_I(G, i, j))
-            { // Si dos vértices son adyacentes en la matriz de adyacencia de impostores, entonces tendrán menos distancia que en la de adyacencia de tripulantes (por la semántica del proyecto). Por eso, si un arco existe en esta matriz de adyacencia, no lo imprimimos otra vez si existe en la de tripulantes.
-                printf("\t%s···%s\n", VECTOR[i].habitacion, VECTOR[j].habitacion);
-            }
-            else if (son_adyacentes_T(G, i, j))
+        for (j = 0; j < N; j++) {
+            if (son_adyacentes_T(G, i, j))
             {
-                printf("\t%s---%s\n", VECTOR[i].habitacion, VECTOR[j].habitacion);
+                printf(COLOR_GREEN "\t--" COLOR_RESET "%-25s(distancia=%d)\n", VECTOR[j].habitacion, son_adyacentes_T(G, i, j));
             }
+            if (son_adyacentes_I(G, i, j))
+            { // Si dos vértices son adyacentes en la matriz de adyacencia de impostores, entonces tendrán menos distancia que en la de adyacencia de tripulantes (por la semántica del proyecto). Por eso, si un arco existe en esta matriz de adyacencia, no haría falta imprimirlo en la de tripulantes, pero en el ejemplo de ejecución sí que se imprime 2 veces, así que yo lo hago también.
+                printf(COLOR_RED "\t··" COLOR_RESET "%-25s(distancia=%d)\n", VECTOR[j].habitacion, son_adyacentes_I(G, i, j));
+            }
+        }
     }
 }
 
@@ -164,7 +202,7 @@ void leerArchivoGrafo(grafo *G)
 {
     tipovertice vertice, v1, v2;
     FILE *fp;
-    fp = fopen("grafo.txt", "r"); // Abrimos el archivo en modo lectura
+    fp = fopen("grafocompleto.txt", "r"); // Abrimos el archivo en modo lectura
     char codigos[3]; // Vale 3 porque tenemos dos caracteres, y un '\0'
     int valor;
     if (fp)
@@ -228,4 +266,33 @@ void guardarArchivoGrafo(grafo G)
         }
         fclose(fp); // Cerramos el archivo, no necesitamos liberar memoria
     }
+}
+
+//Calcula la ruta más corta entre dos vértices usando el algoritmo de Floyd-Warshall
+void rutaMasCorta(grafo G) {
+    tipovertice habOrigen, habDestino;
+    char rol;
+
+    printf("Introduce la habitacion origen: ");
+    scanf(" %s", habOrigen.habitacion);
+    printf("Introduce la habitacion destino: ");
+    scanf(" %s", habDestino.habitacion);
+    if (!existe_vertice(G, habOrigen) || !existe_vertice(G, habDestino)) {
+        printf("La combinación de habitaciones seleccionada no es válida.");
+        return;
+    }
+    printf("Introduce el rol (" COLOR_RED "I" COLOR_RESET "/" COLOR_GREEN "T" COLOR_RESET "): ");
+    scanf(" %c", &rol);
+    if (rol!='I' && rol!='i' && rol != 'T' && rol != 't') {
+        printf("El rol seleccionado no es válido.");
+        return;
+    }
+
+    // Invocamos al algoritmo de Floyd-Warshall
+
+}
+
+//Calcula el árbol de expansión de coste mínimo usando el algoritmo de Prim
+void arbolExpansion(grafo G) {
+
 }
