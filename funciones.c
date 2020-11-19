@@ -6,7 +6,7 @@
 #include "grafo.h"
 #include "ConstantesAmongETSE.h"
 
-#define INFINITY 1000;
+#define INFINITY 1000
 
 //FUNCIONES DEL PROGRAMA DE PRUEBA DE GRAFOS
 
@@ -17,6 +17,31 @@ struct camino
 };
 
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N);
+
+void _printMatrix(int matrix[][MAXVERTICES], int V){
+   int i,j;
+      printf("\n");
+   for(i=0;i<V;i++){
+      for(j=0;j<V;j++){
+         if (matrix[i][j]==INFINITY) 
+            printf("%4s","INF");
+         else
+            printf("%4d",matrix[i][j]);
+      }
+      printf("\n");
+   }
+}
+
+void _printMatrixVPrevio(struct camino matrix[][MAXVERTICES], int V){
+   int i,j;
+      printf("\n");
+   for(i=0;i<V;i++){
+      for(j=0;j<V;j++){
+            printf("%4d",matrix[i][j].verticePrevio);
+      }
+      printf("\n");
+   }
+}
 
 void _floyd(grafo G, int origen, int destino, char tipo)
 {
@@ -132,7 +157,7 @@ void _floyd(grafo G, int origen, int destino, char tipo)
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N)
 {
     if (i != j) {
-        _printPath(P, i, j, V, N);
+        _printPath(P, i, P[i][j].verticePrevio, V, N);
     }
     printf("%s\n", V[j].habitacion);
 }
@@ -394,6 +419,7 @@ void rutaMasCorta(grafo G)
     }
 
     // Invocamos al algoritmo de Floyd-Warshall
+    _floyd(G, posicion(G, habOrigen), posicion(G, habDestino), rol);
 }
 
 //Calcula el árbol de expansión de coste mínimo usando el algoritmo de Prim
