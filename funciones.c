@@ -18,29 +18,35 @@ struct camino
 
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N);
 
-void _printMatrix(int matrix[][MAXVERTICES], int V){
-   int i,j;
-      printf("\n");
-   for(i=0;i<V;i++){
-      for(j=0;j<V;j++){
-         if (matrix[i][j]==INFINITY) 
-            printf("%4s","INF");
-         else
-            printf("%4d",matrix[i][j]);
-      }
-      printf("\n");
-   }
+void _printMatrix(int matrix[][MAXVERTICES], int V)
+{
+    int i, j;
+    printf("\n");
+    for (i = 0; i < V; i++)
+    {
+        for (j = 0; j < V; j++)
+        {
+            if (matrix[i][j] == INFINITY)
+                printf("%4s", "INF");
+            else
+                printf("%4d", matrix[i][j]);
+        }
+        printf("\n");
+    }
 }
 
-void _printMatrixVPrevio(struct camino matrix[][MAXVERTICES], int V){
-   int i,j;
-      printf("\n");
-   for(i=0;i<V;i++){
-      for(j=0;j<V;j++){
-            printf("%4d",matrix[i][j].verticePrevio);
-      }
-      printf("\n");
-   }
+void _printMatrixVPrevio(struct camino matrix[][MAXVERTICES], int V)
+{
+    int i, j;
+    printf("\n");
+    for (i = 0; i < V; i++)
+    {
+        for (j = 0; j < V; j++)
+        {
+            printf("%4d", matrix[i][j].verticePrevio);
+        }
+        printf("\n");
+    }
 }
 
 void _floyd(grafo G, int origen, int destino, char tipo)
@@ -156,7 +162,8 @@ void _floyd(grafo G, int origen, int destino, char tipo)
 
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N)
 {
-    if (i != j) {
+    if (i != j)
+    {
         _printPath(P, i, P[i][j].verticePrevio, V, N);
     }
     printf("%s\n", V[j].habitacion);
@@ -315,8 +322,8 @@ void imprimir_grafo(grafo G)
             {
                 printf(COLOR_GREEN "\t--" COLOR_RESET "%-25s(distancia=%d)\n", VECTOR[j].habitacion, distancia_T(G, i, j));
             }
-            if (distancia_I(G, i, j))
-            { // Si dos vértices son adyacentes en la matriz de adyacencia de impostores, entonces tendrán menos distancia que en la de adyacencia de tripulantes (por la semántica del proyecto). Por eso, si un arco existe en esta matriz de adyacencia, no haría falta imprimirlo en la de tripulantes, pero en el ejemplo de ejecución sí que se imprime 2 veces, así que yo lo hago también.
+            if (distancia_I(G, i, j) && (distancia_I(G, i, j) != distancia_T(G, i, j)))
+            { // La información de la matriz de adyacencia de impostores duplica la de tripulantes, excepto donde hay rejillas, en cuyo caso la distancia será menor que en la matriz de tripulantes (distancia=1). Por eso solo nos interesa imprimir esta distancia si no está ya en la matriz de tripulantes (lo otro sería repetirse innecesariamente).
                 printf(COLOR_RED "\t··" COLOR_RESET "%-25s(distancia=%d)\n", VECTOR[j].habitacion, distancia_I(G, i, j));
             }
         }
@@ -369,7 +376,7 @@ void guardarArchivoGrafo(grafo G)
     int i, j;
     tipovertice *VECTOR;
     FILE *fp;
-    fp = fopen("grafo.txt", "w"); // Abrimos el archivo en modo escritura
+    fp = fopen("grafocompleto.txt", "w"); // Abrimos el archivo en modo escritura
     if (fp)
     {
         VECTOR = array_vertices(G);
@@ -382,14 +389,14 @@ void guardarArchivoGrafo(grafo G)
         {
             //Chequeo sus arcos
             for (j = 0; j < i; j++)
-                if (distancia_I(G, i, j))
-                { // Si dos vértices son adyacentes en la matriz de adyacencia de impostores, entonces tendrán menos distancia que en la de adyacencia de tripulantes (por la semántica del proyecto). Por eso, si un arco existe en esta matriz de adyacencia, no lo imprimimos otra vez si existe en la de tripulantes.
-                    fprintf(fp, "%s..%d-%s\n", VECTOR[i].habitacion, distancia_I(G, i, j), VECTOR[j].habitacion);
-                }
-                else if (distancia_T(G, i, j))
+                if (distancia_T(G, i, j)) // Si existe una distancia entre los dos vértices en la matriz de tripulantes, la imprimimos al archivo.
                 {
                     fprintf(fp, "%s--%d-%s\n", VECTOR[i].habitacion, distancia_T(G, i, j), VECTOR[j].habitacion);
                 }
+            if (distancia_I(G, i, j) && (distancia_I(G, i, j) != distancia_T(G, i, j)))
+            { // La distancia en la matriz de impostores solo nos interesa imprimirla si no está duplicada en la de tripulantes; si ya la hemos impreso en la de tripulantes, entonces sería imprimir información redundante.
+                fprintf(fp, "%s..%d-%s\n", VECTOR[i].habitacion, distancia_I(G, i, j), VECTOR[j].habitacion);
+            }
         }
         fclose(fp); // Cerramos el archivo, no necesitamos liberar memoria
     }

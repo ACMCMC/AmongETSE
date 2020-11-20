@@ -17,4 +17,11 @@
 #define COLOR_CYAN "\x1b[36m"
 #define COLOR_RESET "\x1b[0m"
 
+#define COLOR_RED_BACK "\x1b[41m"
+#define COLOR_GREEN_BACK "\x1b[42m"
+#define COLOR_YELLOW_BACK "\x1b[43m"
+#define COLOR_BLUE_BACK "\x1b[44m"
+#define COLOR_MAGENTA_BACK "\x1b[45m"
+#define COLOR_CYAN_BACK "\x1b[46m"
+
 #endif
