@@ -104,6 +104,8 @@ void borrar_vertice(grafo *G, tipovertice Vert) {
 void crear_arco_T(grafo *G, int pos1, int pos2, int valor) {
     (*G)->AT[pos1][pos2] = valor;
     (*G)->AT[pos2][pos1] = valor;
+    if (!distancia_I(*G, pos1, pos2))
+        crear_arco_I(G, pos1, pos2, valor);
 }
 void crear_arco_I(grafo *G, int pos1, int pos2, int valor) {
     (*G)->AI[pos1][pos2] = valor;
