@@ -389,13 +389,15 @@ void guardarArchivoGrafo(grafo G)
         {
             //Chequeo sus arcos
             for (j = 0; j < i; j++)
+            {
                 if (distancia_T(G, i, j)) // Si existe una distancia entre los dos vértices en la matriz de tripulantes, la imprimimos al archivo.
                 {
                     fprintf(fp, "%s--%d-%s\n", VECTOR[i].habitacion, distancia_T(G, i, j), VECTOR[j].habitacion);
                 }
-            if (distancia_I(G, i, j) && (distancia_I(G, i, j) != distancia_T(G, i, j)))
-            { // La distancia en la matriz de impostores solo nos interesa imprimirla si no está duplicada en la de tripulantes; si ya la hemos impreso en la de tripulantes, entonces sería imprimir información redundante.
-                fprintf(fp, "%s..%d-%s\n", VECTOR[i].habitacion, distancia_I(G, i, j), VECTOR[j].habitacion);
+                if (distancia_I(G, i, j) && (distancia_I(G, i, j) != distancia_T(G, i, j)))
+                { // La distancia en la matriz de impostores solo nos interesa imprimirla si no está duplicada en la de tripulantes; si ya la hemos impreso en la de tripulantes, entonces sería imprimir información redundante.
+                    fprintf(fp, "%s..%d-%s\n", VECTOR[i].habitacion, distancia_I(G, i, j), VECTOR[j].habitacion);
+                }
             }
         }
         fclose(fp); // Cerramos el archivo, no necesitamos liberar memoria
