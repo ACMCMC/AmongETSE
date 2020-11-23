@@ -35,7 +35,7 @@ void _printMatrix(int matrix[][MAXVERTICES], int V)
     }
 }
 
-void _printMatrixVPrevio(struct camino matrix[][MAXVERTICES], int V)
+void _printPrevVertex(struct camino matrix[][MAXVERTICES], int V)
 {
     int i, j;
     printf("\n");
@@ -47,6 +47,72 @@ void _printMatrixVPrevio(struct camino matrix[][MAXVERTICES], int V)
         }
         printf("\n");
     }
+}
+
+void _prim(grafo G, char mapa)
+{
+    int N = num_vertices(G); // El número de vértices del grafo
+    int selected[N];         // Va a guardar el conjunto de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
+    int i, j;                // Variables auxiliares
+    int numArcos = 0;
+    int distanciaTotal = 0;
+    int minimo;
+    int vx, vy; // Los vértices que estamos cogiendo para mirar si añadir su arco
+    for (i = 0; i < N; i++)
+    {
+        selected[i] = 0;
+    }
+    selected[0] = 1;
+
+    while (numArcos < N - 1)
+    {
+        minimo = INFINITY;
+        for (i = 0; i < N; i++)
+        {
+            if (selected[i] == 1)
+            {
+                for (j = 0; j < N; j++)
+                {
+                    if (mapa == 'T')
+                    {
+                        if (selected[j] != 1 && distancia_T(G, i, j))
+                        {
+                            if (minimo > distancia_T(G, i, j))
+                            {
+                                minimo = distancia_T(G, i, j);
+                                vx = i;
+                                vy = j;
+                            }
+                        }
+                    }
+                    else if (mapa == 'I')
+                    {
+                        if (selected[j] != 1 && distancia_I(G, i, j))
+                        {
+                            if (minimo > distancia_I(G, i, j))
+                            {
+                                minimo = distancia_I(G, i, j);
+                                vx = i;
+                                vy = j;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        selected[vy] = 1;
+        numArcos++;
+        distanciaTotal += minimo;
+        if (mapa == 'I' && distancia_I(G, vx, vy) != distancia_T(G, vx, vy))
+        {
+            printf("%15s .. %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
+        }
+        else
+        {
+            printf("%15s -- %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
+        }
+    }
+    printf("Distancia Total del arbol de expansion de coste minimo=" COLOR_CYAN "%d\n" COLOR_RESET, distanciaTotal);
 }
 
 void _floyd(grafo G, int origen, int destino, char tipo)
@@ -111,6 +177,11 @@ void _floyd(grafo G, int origen, int destino, char tipo)
                 { // Si la distancia en la matriz de adyacencia != 0, la distancia en la matriz de distancias será esa distancia
                     caminoActual.verticePrevio = i;
                 }
+
+                if (distancia_I(G, i, j) == distancia_T(G, i, j))
+                { // Si la distancia en la matriz de adyacencia de impostores es la misma que en la de tripulantes, es porque es el mismo arco del grafo, y en ese caso lo tomamos como si "perteneciese al mapa de tripulantes"
+                    caminoActual.mapa = 'T';
+                }
             }
             else
             { // Trabajamos con el grafo de tripulantes
@@ -157,6 +228,8 @@ void _floyd(grafo G, int origen, int destino, char tipo)
     //
     //////////////////////////////////////////////////////////////////
 
+    printf("La distancia total desde " COLOR_CYAN "%s" COLOR_RESET " hasta " COLOR_CYAN "%s" COLOR_RESET " es de " COLOR_MAGENTA "%d" COLOR_RESET "\n", array_vertices(G)[origen].habitacion, array_vertices(G)[destino].habitacion, matrizDistancias[origen][destino]);
+    printf("\tRuta:   ");
     _printPath(matrizVPrevio, origen, destino, array_vertices(G), N);
 }
 
@@ -165,15 +238,19 @@ void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, in
     if (i != j)
     {
         _printPath(P, i, P[i][j].verticePrevio, V, N);
+        if (P[i][j].mapa == 'T')
+        {
+            printf(" --");
+        }
+        else
+        {
+            printf(" ..");
+        }
     }
-    printf("%s\n", V[j].habitacion);
+    printf("%s", V[j].habitacion);
 }
 
 void _printSolution(int matrix[][MAXVERTICES], int N)
-{
-}
-
-void _printPrevVertex(struct camino P[][MAXVERTICES], int N)
 {
 }
 
@@ -434,4 +511,18 @@ void rutaMasCorta(grafo G)
 //Calcula el árbol de expansión de coste mínimo usando el algoritmo de Prim
 void arbolExpansion(grafo G)
 {
+    char rol;
+
+    printf("Introduce el rol (" COLOR_RED "I" COLOR_RESET "/" COLOR_GREEN "T" COLOR_RESET "): ");
+    scanf(" %c", &rol);
+
+    rol = toupper(rol); // Si el usuario escribió su opción en minúsculas, la pasamos a mayúsculas
+
+    if (rol != 'I' && rol != 'T')
+    {
+        printf("El rol seleccionado no es válido.");
+        return;
+    }
+
+    _prim(G, rol);
 }
