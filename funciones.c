@@ -105,7 +105,7 @@ void _prim(grafo G, char mapa)
         distanciaTotal += minimo;
         if (mapa == 'I' && distancia_I(G, vx, vy) != distancia_T(G, vx, vy))
         {
-            printf("%15s .. %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
+            printf("%15s ·· %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
         }
         else
         {
@@ -244,7 +244,7 @@ void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, in
         }
         else
         {
-            printf(" ..");
+            printf(" ··");
         }
     }
     printf("%s", V[j].habitacion);
