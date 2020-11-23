@@ -250,10 +250,6 @@ void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, in
     printf("%s", V[j].habitacion);
 }
 
-void _printSolution(int matrix[][MAXVERTICES], int N)
-{
-}
-
 //Opción a del menú, introducir un vertice en el grafo
 void introducir_vertice(grafo *G)
 {
