@@ -8,12 +8,10 @@
 
 #define INFINITY 1000
 
-//FUNCIONES DEL PROGRAMA DE PRUEBA DE GRAFOS
-
-struct camino
+struct camino // Struct que utilizamos en _floyd, para guardar información del vértice previo y el mapa al que pertenece
 {
     int verticePrevio;
-    char mapa;
+    char mapa; // 'I' o 'T'
 };
 
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N);
@@ -35,6 +33,7 @@ void _printMatrix(int matrix[][MAXVERTICES], int V)
     }
 }
 
+// Imprime la matriz de vértice previo
 void _printPrevVertex(struct camino matrix[][MAXVERTICES], int V)
 {
     int i, j;
@@ -52,40 +51,53 @@ void _printPrevVertex(struct camino matrix[][MAXVERTICES], int V)
 void _prim(grafo G, char mapa)
 {
     int N = num_vertices(G); // El número de vértices del grafo
-    int selected[N];         // Va a guardar el conjunto de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
+    int selected[N];         // Este vector va a guardar la lista de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
     int i, j;                // Variables auxiliares
-    int numArcos = 0;
-    int distanciaTotal = 0;
-    int minimo;
-    int vx, vy; // Los vértices que estamos cogiendo para mirar si añadir su arco
-    for (i = 0; i < N; i++)
+    int numArcos = 0;        // El número de arcos del árbol de expansión
+    int distanciaTotal = 0;  // El coste total del árbol
+    int minimo;              // Variable auxiliar que en cada paso guardará el arco de mínimo coste que podemos añadir al árbol, sin que forme un ciclo
+    int vx, vy;              // Los vértices que estamos cogiendo para mirar si añadir su arco
+
+    //////////////////////////////////////////////////////////////////
+    //
+    // Inicialización de conjunto de vértices seleccionados
+    //
+    //////////////////////////////////////////////////////////////////
+
+    for (i = 1; i < N; i++) // Inicializamos a 0 (no seleccionado) el vector de vértices seleccionados
     {
         selected[i] = 0;
     }
-    selected[0] = 1;
+    selected[0] = 1; // El primer elemento del vector de vértices seleccionados siempre estará seleccionado, esta es una decisión arbitraria porque necesitamos un vértice para empezar el algoritmo de Prim
 
-    while (numArcos < N - 1)
+    //////////////////////////////////////////////////////////////////
+    //
+    // Cálculo del árbol de expansión de coste mínimo
+    //
+    //////////////////////////////////////////////////////////////////
+
+    while (numArcos < N - 1) // Mientras no hayamos recorrido todos los vértices del grafo... (la condición es numArcos < N-1, porque el número de arcos de un grafo siempre es por lo menos una unidad menor que su número de vértices si éste es fuertemente conexo; puede tener más arcos pero como éste es el árbol de expansión de coste mínimo nos interesa parar cuando hayamos recorrido todos los vértices, para lo cual necesitamos tener N-1 arcos. Esta condición no obliga a que los arcos no formen ciclos, pero eso lo conseguimos con las comprobaciones del código de dentro de este lazo)
     {
-        minimo = INFINITY;
-        for (i = 0; i < N; i++)
+        minimo = INFINITY;      // Empezamos con un coste mínimo de infinito, por lo que cualquier arco tendrá menos coste
+        for (i = 0; i < N; i++) // Recorremos todo el vector de vértices seleccionados
         {
-            if (selected[i] == 1)
+            if (selected[i] == 1) // Si el vértice que miramos ha sido seleccionado...
             {
-                for (j = 0; j < N; j++)
+                for (j = 0; j < N; j++) // Volvemos a recorrer el vector mirando qué arcos están conectados con ese vértice
                 {
-                    if (mapa == 'T')
+                    if (mapa == 'T') // Si estamos operando con el mapa de tripulantes...
                     {
-                        if (selected[j] != 1 && distancia_T(G, i, j))
+                        if (selected[j] != 1 && distancia_T(G, i, j)) // Si el vértice j que estamos mirando ahora no ha sido seleccionado (crearía un ciclo), y está conectado con el vértice i, entonces...
                         {
-                            if (minimo > distancia_T(G, i, j))
+                            if (minimo > distancia_T(G, i, j)) // Miramos si la distancia entre los vértices i y j es menor que la que hemos guardado en el mínimo
                             {
-                                minimo = distancia_T(G, i, j);
+                                minimo = distancia_T(G, i, j); // Si es menor, nos quedamos con esta distancia, para obtener el arco con menor coste a nivel global (optimizamos el coste; es un algoritmo voraz)
                                 vx = i;
                                 vy = j;
                             }
                         }
                     }
-                    else if (mapa == 'I')
+                    else if (mapa == 'I') // Lo mismo que arriba, pero para el mapa de tripulantes
                     {
                         if (selected[j] != 1 && distancia_I(G, i, j))
                         {
@@ -100,39 +112,44 @@ void _prim(grafo G, char mapa)
                 }
             }
         }
-        selected[vy] = 1;
-        numArcos++;
-        distanciaTotal += minimo;
-        if (mapa == 'I' && distancia_I(G, vx, vy) != distancia_T(G, vx, vy))
+
+        selected[vy] = 1;         // Una vez hemos recorrido todo el vector probando todas las posibles combinaciones de vectores, el vértice vy que hemos seleccionado será el que tenga menor coste para conectarlo a nuestro árbol de expansión. Lo marcamos como seleccionado.
+        numArcos++;               // Hemos seleccionado un vértice más, así que el número de arcos se incrementa
+        distanciaTotal += minimo; // La distancia total también se incrementa con el nuevo arco que estamos introduciendo
+
+        // Imprimimos el vértice y el arco seleccionado
+        if (mapa == 'I' && distancia_I(G, vx, vy) != distancia_T(G, vx, vy)) // Si estamos en el mapa de impostores, y la distancia entre los vértices seleccionados en este paso es distinta que la del mapa de tripulantes, el arco es una rejilla, y lo imprimimos como tal
         {
             printf("%15s ·· %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
         }
-        else
+        else // El arco es del mapa de tripulantes
         {
             printf("%15s -- %-15s: " COLOR_CYAN "%d\n" COLOR_RESET, array_vertices(G)[vx].habitacion, array_vertices(G)[vy].habitacion, minimo);
         }
     }
+
     printf("Distancia Total del arbol de expansion de coste minimo=" COLOR_CYAN "%d\n" COLOR_RESET, distanciaTotal);
 }
 
 void _floyd(grafo G, int origen, int destino, char tipo)
 {
+    int matrizDistancias[MAXVERTICES][MAXVERTICES];
+    struct camino matrizVPrevio[MAXVERTICES][MAXVERTICES];
+    struct camino caminoActual; // Lo usaremos para introducir caminos en la matriz de vértice previo y cambiar sus valores
+    int k, j, i;                // Variables auxiliares
+    int N;                      // Número de vértices
+    int distanciaEnMatriz;      // La distancia entre dos vértices i y j que tiene guardada nuestra matriz de distancias
+    int distanciaNueva;         // La distancia que tendría pasando por un vértice intermedio k, lo usaremos para compararla con distanciaEnMatriz y quedarnos con la menor de las dos
+
+    tipo = toupper(tipo); // Si el carácter del tipo (I o T) está en minúsculas, lo convertimos a mayúsculas
+
+    N = num_vertices(G); // N es el número de vértices del grafo, aunque nuestra matriz soporta MAXVERTICES vamos a inicializar sólo los N primeros, ya que el resto no nos importa
+
     //////////////////////////////////////////////////////////////////
     //
     // Inicialización de matrices
     //
     //////////////////////////////////////////////////////////////////
-
-    int matrizDistancias[MAXVERTICES][MAXVERTICES];
-    struct camino matrizVPrevio[MAXVERTICES][MAXVERTICES];
-    struct camino caminoActual;
-    int k, j, i, N;
-    int distanciaEnMatriz;
-    int distanciaNueva;
-
-    tipo = toupper(tipo); // Si el carácter del tipo (I o T) está en minúsculas, lo convertimos a mayúsculas
-
-    N = num_vertices(G); // N es el número de vértices del grafo, aunque nuestra matriz soporta MAXVERTICES vamos a inicializar sólo los N primeros, ya que el resto no nos importa
 
     // MATRIZ DE DISTANCIAS
     for (i = 0; i < N; i++)
@@ -195,6 +212,10 @@ void _floyd(grafo G, int origen, int destino, char tipo)
         }
     }
 
+    // Se pueden descomentar estas líneas para ver que la matriz de vértice previo y la de distancias se están inicializando correctamente:
+    //_printMatrix(matrizDistancias, N);
+    //_printPrevVertex(matrizVPrevio, N);
+
     //////////////////////////////////////////////////////////////////
     //
     // Búsqueda de distancias
@@ -211,16 +232,20 @@ void _floyd(grafo G, int origen, int destino, char tipo)
         {
             for (j = 0; j < N; j++)
             {
-                distanciaEnMatriz = matrizDistancias[i][j];
-                distanciaNueva = matrizDistancias[i][k] + matrizDistancias[k][j];
-                if (distanciaEnMatriz > distanciaNueva)
+                distanciaEnMatriz = matrizDistancias[i][j];                       // La distancia que tiene guardada actualmente la matriz de distancias entre i y j
+                distanciaNueva = matrizDistancias[i][k] + matrizDistancias[k][j]; // La distancia que tendrían i y j, si el camino que los conectase pasara por k
+                if (distanciaEnMatriz > distanciaNueva)                           // Si pasando por k tenemos un camino más corto, cambiamos el camino que teníamos guardado y lo cambiamos por el que pase por k
                 {
-                    matrizDistancias[i][j] = distanciaNueva;
-                    matrizVPrevio[i][j] = matrizVPrevio[k][j];
+                    matrizDistancias[i][j] = distanciaNueva;   // Actualizamos la distancia entre i y j
+                    matrizVPrevio[i][j] = matrizVPrevio[k][j]; // El vértice previo a j para llegar de i a j será el vértice previo a j para llegar de k a j, así hacemos que nuestro camino pase por k y no por donde estuviera pasando antes
                 }
             }
         }
     }
+
+    // Se pueden descomentar estas líneas para ver que la matriz de vértice previo y la de distancias se están calculando correctamente:
+    //_printMatrix(matrizDistancias, N);
+    //_printPrevVertex(matrizVPrevio, N);
 
     //////////////////////////////////////////////////////////////////
     //
@@ -230,15 +255,16 @@ void _floyd(grafo G, int origen, int destino, char tipo)
 
     printf("La distancia total desde " COLOR_CYAN "%s" COLOR_RESET " hasta " COLOR_CYAN "%s" COLOR_RESET " es de " COLOR_MAGENTA "%d" COLOR_RESET "\n", array_vertices(G)[origen].habitacion, array_vertices(G)[destino].habitacion, matrizDistancias[origen][destino]);
     printf("\tRuta:   ");
-    _printPath(matrizVPrevio, origen, destino, array_vertices(G), N);
+    _printPath(matrizVPrevio, origen, destino, array_vertices(G), N); // Imprimimos la ruta
 }
 
+// Función recursiva que imprime el camino para llegar de i a j. Va volviendo hacia atrás desde j a i, y cuando llega a i, imprime el camino
 void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N)
 {
-    if (i != j)
+    if (i != j) // Si ésta no es la habitación de origen... (que lo sea es nuestra condición de parada de la función recursiva)
     {
         _printPath(P, i, P[i][j].verticePrevio, V, N);
-        if (P[i][j].mapa == 'T')
+        if (P[i][j].mapa == 'T') // Imprimimos el tipo de arco, si no es la habitación de origen
         {
             printf(" --");
         }
@@ -247,7 +273,7 @@ void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, in
             printf(" ··");
         }
     }
-    printf("%s", V[j].habitacion);
+    printf("%s", V[j].habitacion); // Imprimimos esta habitación
 }
 
 //Opción a del menú, introducir un vertice en el grafo
