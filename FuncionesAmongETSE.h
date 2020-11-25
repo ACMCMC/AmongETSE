@@ -3,8 +3,7 @@
 #define FUNCIONESAMONGETSE_H
 
 #include "abb.h"
-
-#define NUM_TAREAS 5
+#include "ConstantesAmongETSE.h"
 
 /**
  * lee un archivo de jugadores de un fichero
