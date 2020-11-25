@@ -14,8 +14,6 @@ struct camino // Struct que utilizamos en _floyd, para guardar información del 
     char mapa; // 'I' o 'T'
 };
 
-void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N);
-
 void _printMatrix(int matrix[][MAXVERTICES], int V)
 {
     int i, j;
@@ -130,6 +128,9 @@ void _prim(grafo G, char mapa)
 
     printf("Distancia Total del arbol de expansion de coste minimo=" COLOR_CYAN "%d\n" COLOR_RESET, distanciaTotal);
 }
+
+// Declaración de la función recursiva privada que imprime el camino para llegar de i a j
+void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, int N);
 
 void _floyd(grafo G, int origen, int destino, char tipo)
 {
