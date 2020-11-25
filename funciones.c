@@ -142,8 +142,6 @@ void _floyd(grafo G, int origen, int destino, char tipo)
     int distanciaEnMatriz;      // La distancia entre dos vértices i y j que tiene guardada nuestra matriz de distancias
     int distanciaNueva;         // La distancia que tendría pasando por un vértice intermedio k, lo usaremos para compararla con distanciaEnMatriz y quedarnos con la menor de las dos
 
-    tipo = toupper(tipo); // Si el carácter del tipo (I o T) está en minúsculas, lo convertimos a mayúsculas
-
     N = num_vertices(G); // N es el número de vértices del grafo, aunque nuestra matriz soporta MAXVERTICES vamos a inicializar sólo los N primeros, ya que el resto no nos importa
 
     //////////////////////////////////////////////////////////////////
@@ -302,12 +300,12 @@ void eliminar_vertice(grafo *G)
 }
 
 //Opción c del menú, crear una relación entre dos vértices
-
 void nuevo_arco(grafo *G)
 {
     tipovertice v1, v2;
     int distancia;
     char opcion;
+
     //Insertamos una nueva relación pidiendo los datos al usuario controlando que existan los vértices
     //Vértice origen del arco
     printf("Introduce habitación origen: ");
@@ -317,6 +315,7 @@ void nuevo_arco(grafo *G)
         printf("El vertice %s no existe en el grafo\n", v1.habitacion);
         return;
     }
+
     //Vértice destino del arco
     printf("Introduce habitación destino: ");
     scanf(" %s", v2.habitacion);
@@ -325,6 +324,7 @@ void nuevo_arco(grafo *G)
         printf("El vertice %s no existe en el grafo\n", v2.habitacion);
         return;
     }
+
     printf("Distancia: ");
     scanf(" %d", &distancia);
     if (distancia < 1)
@@ -332,12 +332,14 @@ void nuevo_arco(grafo *G)
         printf("Distancia no válida\n");
         return;
     }
+
     printf("Comunicacion mapa tripulantes (T) o impostores (I)? ");
     scanf(" %c", &opcion);
     if (opcion == 'T' || opcion == 't')
     {
         if (!distancia_T(*G, posicion(*G, v1), posicion(*G, v2)))
         {
+            //Creación del arco
             crear_arco_T(G, posicion(*G, v1), posicion(*G, v2), distancia);
         }
         else
@@ -350,6 +352,7 @@ void nuevo_arco(grafo *G)
     {
         if (!distancia_I(*G, posicion(*G, v1), posicion(*G, v2)))
         {
+            //Creación del arco
             crear_arco_I(G, posicion(*G, v1), posicion(*G, v2), distancia);
         }
         else
@@ -363,8 +366,6 @@ void nuevo_arco(grafo *G)
         printf("Opción no válida\n");
         return;
     }
-
-    //Creación del arco
 }
 
 //Opción d del menú, eliminar una relación entre dos vértices
@@ -514,14 +515,18 @@ void rutaMasCorta(grafo G)
     scanf(" %s", habOrigen.habitacion);
     printf("Introduce la habitacion destino: ");
     scanf(" %s", habDestino.habitacion);
-    if (!existe_vertice(G, habOrigen) || !existe_vertice(G, habDestino))
+    if (!existe_vertice(G, habOrigen) || !existe_vertice(G, habDestino)) // Comprobamos si existen ambas habitaciones
     {
         printf("La combinación de habitaciones seleccionada no es válida.");
         return;
     }
+
     printf("Introduce el rol (" COLOR_RED "I" COLOR_RESET "/" COLOR_GREEN "T" COLOR_RESET "): ");
     scanf(" %c", &rol);
-    if (rol != 'I' && rol != 'i' && rol != 'T' && rol != 't')
+
+    rol = toupper(rol); // Si el carácter del rol (I o T) está en minúsculas, lo convertimos a mayúsculas
+
+    if (rol != 'I' && rol != 'T')
     {
         printf("El rol seleccionado no es válido.");
         return;
