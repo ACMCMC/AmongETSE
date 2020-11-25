@@ -48,8 +48,8 @@ void _printPrevVertex(struct camino matrix[][MAXVERTICES], int V)
 
 void _prim(grafo G, char mapa)
 {
-    int N = num_vertices(G); // El número de vértices del grafo
-    int selected[N];         // Este vector va a guardar la lista de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
+    int N; // El número de vértices del grafo
+    int *selected;         // Este vector va a guardar la lista de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
     int i, j;                // Variables auxiliares
     int numArcos = 0;        // El número de arcos del árbol de expansión
     int distanciaTotal = 0;  // El coste total del árbol
@@ -61,6 +61,9 @@ void _prim(grafo G, char mapa)
     // Inicialización de conjunto de vértices seleccionados
     //
     //////////////////////////////////////////////////////////////////
+
+    N = num_vertices(G); // Asignamos valor a N
+    selected = (int *) malloc(sizeof(int)*N); // Tenemos que reservar dinámicamente el vector, porque no conocemos a priori su tamaño (o podríamos usar también MAXVERTICES)
 
     for (i = 1; i < N; i++) // Inicializamos a 0 (no seleccionado) el vector de vértices seleccionados
     {
@@ -127,6 +130,8 @@ void _prim(grafo G, char mapa)
     }
 
     printf("Distancia Total del arbol de expansion de coste minimo=" COLOR_CYAN "%d\n" COLOR_RESET, distanciaTotal);
+
+    free(selected); // Liberamos la memoria del vector
 }
 
 // Declaración de la función recursiva privada que imprime el camino para llegar de i a j
