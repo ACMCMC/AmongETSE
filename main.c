@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "funciones.h"
+#include "ConstantesAmongETSE.h"
 
 /*
  * Programa que muestra el uso del TAD grafo de números enteros
@@ -18,6 +19,7 @@ int main(int argc, char **argv)
     imprimir_grafo(G);
     do
     {
+        // Imprimimos un menú básico
         printf("\n\na. Anadir habitacion\n");
         printf("b. Clausurar habitacion\n");
         printf("c. Crear comunicacion\n");
@@ -29,7 +31,7 @@ int main(int argc, char **argv)
         printf("s. Salir\n");
 
         printf("Opcion: ");
-        scanf(" %c", &opcion);
+        scanf(" %c", &opcion); // Leemos la opción del usuario
 
         switch (opcion)
         {
