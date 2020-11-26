@@ -6,6 +6,7 @@
 #include "abb.h"
 #include "FuncionesAmongETSE.h"
 #include "cola.h"
+#include "FuncionesAEMaps.h"
 
 //Función privada que genera un número aleatorio entre inf y sup
 unsigned int _aleatorio(int inf, int sup)
@@ -54,6 +55,9 @@ void _inicializarJugador(tipoelem *registro)
 { //inicializa los campos rol,descripcionTarea y lugarTarea
     registro->rol = NO_ASIGNADO;
     crear_cola(&(registro->tareas));
+    registro->distancia = 0;
+    registro->siguienteHabitacion[0] = '\0';
+    registro->ultimaHabitacion[0] = '\0';
 }
 
 // Función auxiliar para _buscarPorIndice
@@ -228,10 +232,10 @@ void _asignarTarea(tipoelemCola *tarea)
     char **habitaciones = (char **)malloc(sizeof(char **) * 9); // Este es el listado de las habitaciones
     habitaciones[0] = "Armeria";
     habitaciones[1] = "Cafeteria";
-    habitaciones[2] = "Comunicaciones";
+    habitaciones[2] = "Comunicacion";
     habitaciones[3] = "Electricidad";
     habitaciones[4] = "Escudos";
-    habitaciones[5] = "Motores";
+    habitaciones[5] = "MotorSuperior";
     habitaciones[6] = "Navegacion";
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
@@ -399,20 +403,63 @@ int _contarRol(abb A, char rol)
     return numero;
 }
 
+// Coge un jugador, que ha llegado a una habitación, y le asigna la siguiente a la que ir
+void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
+{
+    tipovertice habActual;
+    tipovertice habSiguiente;
+    tipovertice habDestino;
+    // Aquí pueden darse 2 casos: que el jugador haya llegado a una habitación, pero solo esté pasando por allí (lo pueden matar pese a todo); o que esta habitación a la que llega sea la de la tarea, en cuyo caso avanzamos la cola de tareas
+    if (strncmp(primero(jugador->tareas).lugarTarea, jugador->siguienteHabitacion, L_HABITACION) == 0)
+    { // Si esta es la habitación de la tarea...
+        suprimir_cola(&(jugador->tareas));
+    }
+    strncpy(jugador->ultimaHabitacion, jugador->siguienteHabitacion, L_HABITACION); // ultimaHabitacion = siguienteHabitacion
+
+    if (!es_vacia_cola(jugador->tareas))
+    { // Si aún quedan tareas por realizar...
+        strncpy(habActual.habitacion, jugador->ultimaHabitacion, L_HABITACION);
+        strncpy(habDestino.habitacion, primero(jugador->tareas).lugarTarea, L_HABITACION);
+
+        habSiguiente = verticeSiguiente(G, habActual, habDestino, jugador->rol); // Obtenemos a qué habitación tendría que ir ahora nuestro jugador para acercarse a la de su tarea
+
+        switch (jugador->rol) // Escribimos la distancia a la siguiente habitación en el jugador
+        {
+        case 'T':
+            jugador->distancia = distancia_T(G, posicion(G, habActual), posicion(G, habSiguiente));
+            break;
+        case 'I':
+            jugador->distancia = distancia_I(G, posicion(G, habActual), posicion(G, habSiguiente));
+            break;
+        }
+
+        strncpy(jugador->siguienteHabitacion, habSiguiente.habitacion, L_HABITACION); // Escribimos la siguiente habitación en el jugador
+    }
+}
+
 // Elimina la tarea del primero de la cola de tareas del todos los jugadores con tareas del árbol
-void _siguienteTarea(abb A)
+void _siguienteTarea(abb A, grafo G)
 {
     tipoelem jugador;
     if (!es_vacio(A))
     {
-        _siguienteTarea(izq(A));
+        _siguienteTarea(izq(A), G);
         leer(A, &jugador);
         if (!es_vacia_cola(jugador.tareas))
         {
-            suprimir_cola(&(jugador.tareas));
+            if (jugador.distancia == 0)
+            {
+                _auxActualizarDistanciaHabitacion(&jugador, G);
+                modificar(A, jugador);
+            }
+            else
+            { // El jugador está en tránsito, así que decrementamos su distancia
+                jugador.distancia--;
+                modificar(A, jugador);
+            }
         }
         modificar(A, jugador);
-        _siguienteTarea(der(A));
+        _siguienteTarea(der(A), G);
     }
 }
 
@@ -486,7 +533,6 @@ void leerArchivoJugadores(abb *A)
             fscanf(fp, " %s", registro.nombreJugador);
         }
         fclose(fp);
-        listadoJugadores(*A);
     }
 }
 
@@ -575,8 +621,16 @@ void _listadoNombresJugadores(abb A)
     }
 }
 
+void _prepararJugadorInicio(tipoelem *jugador, grafo G)
+{
+    strncpy(jugador->ultimaHabitacion, "Cafeteria", L_HABITACION);
+    strncpy(jugador->siguienteHabitacion, "Cafeteria", L_HABITACION);
+    jugador->distancia = 0;
+    _auxActualizarDistanciaHabitacion(jugador, G);
+}
+
 //Función que genera los datos de una partida: jugadores, roles y tareas
-void jugar(abb *Arbol)
+void jugar(abb *Arbol, grafo G)
 {
     int numJugadores, numImpostores, contador, victoria; // Variables auxiliares que usaremos para hacer la asignación
     char opcion;                                         // Para el menú
@@ -619,6 +673,7 @@ void jugar(abb *Arbol)
                     jugador.rol = ROL_TRIPULANTE;
                 }
                 _asignarTareas(jugador);
+                _prepararJugadorInicio(&jugador, G);
                 insertar(&arbolJuego, jugador);
                 contador++; // Insertamos el siguiente jugador
             }
@@ -689,7 +744,8 @@ void jugar(abb *Arbol)
         contador = _contarRol(arbolJuego, ROL_KILLED);
         _ejecutarTarea(arbolJuego);
 
-        if (contador == _contarRol(arbolJuego, ROL_KILLED)) {
+        if (contador == _contarRol(arbolJuego, ROL_KILLED))
+        {
             printf("No ha muerto nadie.\n");
         }
         printf("\nQuien es el impostor? ");
@@ -702,7 +758,9 @@ void jugar(abb *Arbol)
                 if (jugador.rol == ROL_IMPOSTOR || jugador.rol == ROL_TRIPULANTE) // El jugador tiene que estar vivo
                 {
                     _matarJugador(jugador, arbolJuego);
-                } else {
+                }
+                else
+                {
                     printf("Ese jugador ya está muerto. No se ha matado a nadie.\n");
                 }
             }
@@ -712,7 +770,7 @@ void jugar(abb *Arbol)
             printf("No se ha matado a nadie.\n");
         }
 
-        _siguienteTarea(arbolJuego);
+        _siguienteTarea(arbolJuego, G);
         victoria = _comprobarVictoria(arbolJuego);
     } while (victoria == 0);
     free(nombreJugador);

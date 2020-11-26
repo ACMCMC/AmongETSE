@@ -26,12 +26,7 @@ void leerArchivoGrafo(grafo *G);
 //Opción f del menú, guarda el grafo en un archivo
 void guardarArchivoGrafo(grafo G);
 
-//Calcula la ruta más corta entre dos vértices usando el algoritmo de Floyd-Warshall
-void rutaMasCorta(grafo G);
-
-//Calcula el árbol de expansión de coste mínimo usando el algoritmo de Prim
-void arbolExpansion(grafo G);
-
+// Devuelve el vértice siguiente al origen en una ruta calculada por Floyd-Warshall
+tipovertice verticeSiguiente(grafo G, tipovertice origen, tipovertice destino, char tipo);
 
 #endif	/* FUNCIONESAEMAPS_H */
-

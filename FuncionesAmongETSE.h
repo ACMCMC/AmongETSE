@@ -3,6 +3,7 @@
 #define FUNCIONESAMONGETSE_H
 
 #include "abb.h"
+#include "grafo.h"
 #include "ConstantesAmongETSE.h"
 
 /**
@@ -33,7 +34,7 @@ void listadoJugadores(abb A);
  * Genera una nueva partida, asignando valores a cada jugador
  * @param A
  */
-void jugar(abb *A);
+void jugar(abb *A, grafo G);
 
 /**
  * Consulta los datos de un jugador

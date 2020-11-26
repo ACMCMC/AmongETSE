@@ -18,7 +18,10 @@ typedef struct
 {
     char nombreJugador[L_NOMBRE];
     char rol;
+    char ultimaHabitacion[L_HABITACION];
+    char siguienteHabitacion[L_HABITACION];
     cola tareas;
+    int distancia; // La distancia del jugador a la habitación de su siguiente tarea
 } tipoelem;
 
 //////////////////////////////////////////FIN PARTE MODIFICABLE

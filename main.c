@@ -51,7 +51,6 @@ int main(int argc, char **argv)
         printf("\ti. Imprimir mapa\n");
         printf("\tl. Listado de jugador@s por orden alfabético\n");
         printf("\tq. Clausurar habitacion\n");
-        printf("\tr. Ruta mas rapida entre dos habitaciones\n");
         printf("\ts. Salir\n");
 
         printf("Opcion: ");
@@ -98,15 +97,12 @@ int main(int argc, char **argv)
             break;
         case 'g':
         case 'G':
-            jugar(&arbolJugadores);
-            break;
-        case 'r':
-        case 'R':
-            rutaMasCorta(G);
+            jugar(&arbolJugadores, G);
             break;
         case 's':
         case 'S':
             opcion = 's';
+            printf("Adios\n");
             break;
         default:
             printf("Opción equivocada\n");
