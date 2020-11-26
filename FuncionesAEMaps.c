@@ -392,7 +392,6 @@ void guardarArchivoGrafo(grafo G)
 // Devuelve el vértice siguiente al origen en una ruta calculada por Floyd-Warshall
 tipovertice verticeSiguiente(grafo G, tipovertice origen, tipovertice destino, char tipo)
 {
-    printf("ESTO VA 1\n");
     int j, siguienteJ; // Como vamos a recorrer el camino en sentido inverso (destino -> origen), queremos quedarnos con el vértice anterior al origen. Eso será siguienteJ, que siempre guarda el siguiente de lo que sea J en un momento determinado.
     int matrizDistancias[MAXVERTICES][MAXVERTICES];
     struct camino matrizVPrevio[MAXVERTICES][MAXVERTICES];

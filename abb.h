@@ -22,6 +22,7 @@ typedef struct
     char siguienteHabitacion[L_HABITACION];
     cola tareas;
     int distancia; // La distancia del jugador a la habitación de su siguiente tarea
+    int tiempoRestanteTarea;
 } tipoelem;
 
 //////////////////////////////////////////FIN PARTE MODIFICABLE
