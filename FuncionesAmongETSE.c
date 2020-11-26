@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h> //necesaria para rand()
-#include <string.h> //para comparar cadenas
-#include <math.h>   //para calcular el número de impostores con round()
+#include <stdlib.h> // necesaria para rand()
+#include <string.h> // para comparar cadenas
+#include <math.h>   // para calcular el número de impostores con round()
+#include <ctype.h>  // para toupper()
 
 #include "abb.h"
 #include "FuncionesAmongETSE.h"
@@ -148,6 +149,51 @@ void _imprimirJugador(tipoelem E)
     }
 }
 
+// Retira del mapa a los jugadores con el rol indicado que están en la habitación indicada
+void _retirarJugsPorHabitacion(abb A, char rol, char *habitacion)
+{
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _retirarJugsPorHabitacion(izq(A), rol, habitacion);
+        leer(A, &jugador);
+        if (jugador.rol == rol && strcmp(jugador.siguienteHabitacion, habitacion) == 0)
+        { // Borramos la información de este jugador, porque concide con los criterios que pasamos a la función
+            while (!es_vacia_cola(jugador.tareas))
+            {
+                suprimir_cola(&(jugador.tareas));
+            }
+            destruir_cola(&(jugador.tareas));
+            _inicializarJugador(&jugador);
+            modificar(A, jugador);
+        }
+        _retirarJugsPorHabitacion(der(A), rol, habitacion);
+    }
+}
+
+// Tras mostrar el menú, ya sabemos qué jugadores han muerto, así que para que otros jugadores no se encuentren sus cadáveres y los reporten, retiramos del mapa todos los cadáveres por descubrir
+void _retirarJugsMuertos(abb A)
+{
+    tipoelem jugador;
+    if (!es_vacio(A))
+    {
+        _retirarJugsMuertos(izq(A));
+        leer(A, &jugador);
+        if (jugador.rol == ROL_KILLED && _jugadorEstaEnUnaHabitacion(jugador))
+        { // Borramos la información de este jugador, porque concide con los criterios que pasamos a la función
+            while (!es_vacia_cola(jugador.tareas))
+            {
+                suprimir_cola(&(jugador.tareas));
+            }
+            destruir_cola(&(jugador.tareas));
+            _inicializarJugador(&jugador);
+            modificar(A, jugador);
+        }
+        _retirarJugsMuertos(der(A));
+    }
+}
+
+// Imprime los nombres de los jugadores con el rol seleccionado que se encuentran en la habitación indicada
 void _imprimirJugsPorHabitacion(abb A, char rol, char *habitacion)
 {
     tipoelem jugador;
@@ -250,7 +296,7 @@ void _asignarTarea(tipoelemCola *tarea)
     descripcionTarea[6] = "Limpiar el filtro O2";
     descripcionTarea[7] = "Mapa de navegacion";
 
-    char **habitaciones = (char **)malloc(sizeof(char **) * 9); // Este es el listado de las habitaciones
+    char **habitaciones = (char **)malloc(sizeof(char **) * 10); // Este es el listado de las habitaciones
     habitaciones[0] = "Armeria";
     habitaciones[1] = "Cafeteria";
     habitaciones[2] = "Comunicacion";
@@ -260,6 +306,7 @@ void _asignarTarea(tipoelemCola *tarea)
     habitaciones[6] = "Navegacion";
     habitaciones[7] = "O2";
     habitaciones[8] = "Seguridad";
+    habitaciones[9] = "MotorInferior";
 
     numTarea = _aleatorio(1, 8);                                                                                                   // Elegimos una descripcionTarea al azar
     strncpy(tarea->descripcionTarea, descripcionTarea[numTarea - 1], sizeof(char) * (strlen(descripcionTarea[numTarea - 1]) + 1)); // Copiamos la descripcionTarea en el campo descripcionTarea
@@ -267,7 +314,15 @@ void _asignarTarea(tipoelemCola *tarea)
     switch (numTarea)
     {
     case 1:
-        numHabitacion = 5;
+        switch (_aleatorio(1, 2))
+        {
+        case 1:
+            numHabitacion = 5;
+            break;
+        case 2:
+            numHabitacion = 9;
+            break;
+        }
         break;
     case 2:
         numHabitacion = 3;
@@ -293,7 +348,7 @@ void _asignarTarea(tipoelemCola *tarea)
         }
         break;
     case 4:
-        switch (_aleatorio(1, 7))
+        switch (_aleatorio(1, 8))
         {
         case 1:
             numHabitacion = 6;
@@ -315,6 +370,9 @@ void _asignarTarea(tipoelemCola *tarea)
             break;
         case 7:
             numHabitacion = 5;
+            break;
+        case 8:
+            numHabitacion = 9;
             break;
         }
         break;
@@ -363,7 +421,8 @@ void _auxMatarJugPorIndiceHabitacion(abb A, int jugMatar, int *i, char rol, char
             if (*i == jugMatar)
             {
                 _matarJugador(jugador, A);
-                printf("Ha muerto %s.\n", jugador.nombreJugador);
+                // No nos interesa mostrar esto por consola para mantener el misterio
+                //printf("Ha muerto %s.\n", jugador.nombreJugador);
             }
         }
         _auxMatarJugPorIndiceHabitacion(der(A), jugMatar, i, rol, habitacion);
@@ -386,29 +445,30 @@ void _auxEjecutarTick(abb arbolJugadores, abb arbolRecorrido, int *mostrarMenuMu
         _auxEjecutarTick(arbolJugadores, izq(arbolRecorrido), mostrarMenuMuerteJugador);
         _auxEjecutarTick(arbolJugadores, der(arbolRecorrido), mostrarMenuMuerteJugador);
         leer(arbolRecorrido, &jugador);
-        printf("%c %-10s:\t%20s -> %20s, %d (t=%d)\n", jugador.rol, jugador.nombreJugador, jugador.ultimaHabitacion, jugador.siguienteHabitacion, jugador.distancia, jugador.tiempoRestanteTarea);
         if (jugador.rol != ROL_KILLED && _jugadorEstaEnUnaHabitacion(jugador))
         { // Si el jugador está en una habitación, puede que haya un jugador muerto en esa habitación. Lo comprobamos y en caso afirmativo, ponemos el flag de mostrarMenuMuerteJugador a 1 e imprimimos por pantalla quién se ha encontrado el cadáver
             numJugs = _numJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
-            if (numJugs == 1)
+            if (numJugs > 0)
             {
                 *mostrarMenuMuerteJugador = 1;
-                printf("%s se ha encontrado el cadáver de", jugador.nombreJugador);
-                _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
-                printf(".\n");
-            }
-            else if (numJugs > 1)
-            {
-                *mostrarMenuMuerteJugador = 1;
-                printf("%s se han encontrado los cadáveres de", jugador.nombreJugador);
-                _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
-                printf(".\n");
+                if (numJugs == 1)
+                {
+                    printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado la muerte de" COLOR_MAGENTA, jugador.nombreJugador);
+                    _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
+                    printf(COLOR_RESET ".\n");
+                }
+                else if (numJugs > 1)
+                {
+                    printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
+                    _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
+                    printf(COLOR_RESET ".\n");
+                }
+                _retirarJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
             }
         }
         if (jugador.rol == ROL_IMPOSTOR && _jugadorEstaEnUnaHabitacion(jugador))
         { // Por cada impostor...
             numJugs = _numJugsPorHabitacion(arbolJugadores, ROL_TRIPULANTE, jugador.siguienteHabitacion);
-            printf("numJugs %d\n", numJugs);
             if (numJugs > 0)
             { // Miramos si hay algún tripulante en la habitación del impostor. Si lo hay, lo matamos, pero sólo si hay uno, porque habiendo dos se delata
                 if (_aleatorio(1, 4) != 1)
@@ -448,16 +508,21 @@ void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
     // Aquí pueden darse 2 casos: que el jugador haya llegado a una habitación, pero solo esté pasando por allí (lo pueden matar pese a todo); o que esta habitación a la que llega sea la de la tarea, en cuyo caso avanzamos la cola de tareas
     if (strncmp(primero(jugador->tareas).lugarTarea, jugador->siguienteHabitacion, L_HABITACION) == 0)
     { // Si esta es la habitación de la tarea...
-        if (jugador->tiempoRestanteTarea==-1) { // Si tiempoRestanteTarea es -1, es que acaba de llegar a la habitación. Le asignamos 3 ticks de tiempo para realizar la tarea.
-            jugador->tiempoRestanteTarea = 3;
-        } else if (jugador->tiempoRestanteTarea==0) { // Si ha agotado el tiempo de su tarea, la borramos de la cola de tareas
+        if (jugador->tiempoRestanteTarea == -1)
+        { // Si tiempoRestanteTarea es -1, es que acaba de llegar a la habitación. Le asignamos una cantidad de ticks de tiempo entre TIEMPO_MIN_TAREA y TIEMPO_MAX_TAREA para realizar la tarea.
+            jugador->tiempoRestanteTarea = _aleatorio(TIEMPO_MIN_TAREA, TIEMPO_MAX_TAREA);
+        }
+        else if (jugador->tiempoRestanteTarea == 0)
+        {                                                                                          // Si ha agotado el tiempo de su tarea, la borramos de la cola de tareas
+            strncpy(jugador->ultimaHabitacion, primero(jugador->tareas).lugarTarea, L_HABITACION); // ultimaHabitacion = esta habitación
             suprimir_cola(&(jugador->tareas));
-            jugador->tiempoRestanteTarea=-1;
-        } else { // Si aún le faltan algunos ticks para acabar la tarea, solo hacemos avanzar el tiempo
+            jugador->tiempoRestanteTarea = -1;
+        }
+        else
+        { // Si aún le faltan algunos ticks para acabar la tarea, solo hacemos avanzar el tiempo
             jugador->tiempoRestanteTarea--;
         }
     }
-    strncpy(jugador->ultimaHabitacion, jugador->siguienteHabitacion, L_HABITACION); // ultimaHabitacion = siguienteHabitacion
 
     if (!es_vacia_cola(jugador->tareas))
     { // Si aún quedan tareas por realizar...
@@ -467,6 +532,7 @@ void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
         }
         else
         {
+            strncpy(jugador->ultimaHabitacion, jugador->siguienteHabitacion, L_HABITACION); // ultimaHabitacion = siguienteHabitacion
             strncpy(habActual.habitacion, jugador->ultimaHabitacion, L_HABITACION);
             strncpy(habDestino.habitacion, primero(jugador->tareas).lugarTarea, L_HABITACION);
 
@@ -489,7 +555,7 @@ void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
 
 // Ejecuta un tick del tiempo del juego:
 // Mueve los jugadores una unidad de tiempo, y los impostores matan a los que estén en sus mismas habitaciones
-int _ejecutarTick(abb A, grafo G)
+int _ejecutarTick(abb A)
 {
     int mostrarMenuMuerteJugador = 0;
     _auxEjecutarTick(A, A, &mostrarMenuMuerteJugador);
@@ -504,18 +570,7 @@ void _siguienteTick(abb A, grafo G)
     {
         _siguienteTick(izq(A), G);
         leer(A, &jugador);
-        if (jugador.rol == ROL_KILLED && _jugadorEstaEnUnaHabitacion(jugador))
-        { // Si aún no hemos retirado a un jugador muerto del mapa, lo retiramos
-            // Empezamos vaciando la cola de tareas del jugador
-            while (!es_vacia_cola(jugador.tareas))
-            {
-                suprimir_cola(&(jugador.tareas));
-            }
-
-            destruir_cola(&(jugador.tareas));
-            _inicializarJugador(&jugador);
-        }
-        if (!es_vacia_cola(jugador.tareas))
+        if (!es_vacia_cola(jugador.tareas) && jugador.rol != ROL_KILLED)
         {
             if (_jugadorEstaEnUnaHabitacion(jugador)) // El jugador ha llegado a una habitación, actualizamos la siguiente a la que le toca ir
             {
@@ -669,7 +724,7 @@ void _listadoJugadoresVivosYUltimasHabitaciones(abb A)
             }
             else
             {
-                printf("%-15s  |%-15s|\n", jugador.nombreJugador, jugador.ultimaHabitacion);
+                printf("%-15s  | %-15s | %-15s |\n", jugador.nombreJugador, jugador.ultimaHabitacion, jugador.distancia == 0 ? jugador.siguienteHabitacion : "En transito");
             }
         }
         _listadoJugadoresVivosYUltimasHabitaciones(der(A));
@@ -701,7 +756,7 @@ void _prepararJugadorInicio(tipoelem *jugador, grafo G)
 void jugar(abb *Arbol, grafo G)
 {
     int numJugadores, numImpostores, contador, victoria; // Variables auxiliares que usaremos para hacer la asignación
-    char opcion;                                         // Para el menú
+    char opcion, opcionAnunciarImpostores;               // Para el menú
     tipoelem jugador;                                    // Variable auxiliar para almacenar un jugador (se reasignará según sea conveniente)
     abb arbolJuego;                                      // Aquí guardaremos los jugadores de la partida
     crear(&arbolJuego);                                  // Creamos el árbol de los jugadores de la partida
@@ -711,21 +766,26 @@ void jugar(abb *Arbol, grafo G)
 
     do
     {
-        printf("Número de participantes (4-10): ");
+        printf("Número de participantes (4-15): ");
         scanf(" %d", &numJugadores);
-    } while (!(numJugadores >= 4 && numJugadores <= 10));
+    } while (!(numJugadores >= 4 && numJugadores <= 15));
+
+    printf("Deseas anunciar si los jugadores expulsados son impostores o no? (s/N): "); // Normalmente, la partida es "a ciegas": no anunciamos si el jugador que elegimos echar de la nave es un impostor o no, para añadir incertidumbre hasta el final. Pese a todo, se puede desactivar esta opción
+    scanf(" %c", &opcionAnunciarImpostores);
+    opcionAnunciarImpostores = toupper(opcionAnunciarImpostores); // Cualquier opción que no sea 'S' se interpretará como que no queremos que se anuncien
 
     do
     {
         printf("Quieres hacer automáticamente el reparto de jugadores? (s/n): ");
         scanf(" %c", &opcion);
-    } while (opcion != 's' && opcion != 'S' && opcion != 'n' && opcion != 'N');
+        opcion = toupper(opcion);
+    } while (opcion != 'S' && opcion != 'N');
 
     numImpostores = round(numJugadores / 5.0); // Calculamos el número de impostores. Los x primeros jugadores que entren en el árbol serán impostores (esto podemos hacerlo porque entran en orden aleatorio, así que es lo mismo que que repartamos los roles después de que estén en el árbol)
 
-    if (opcion == 's' || opcion == 'S')
-    { // Repartir los jugadores automáticamente
-
+    switch (opcion)
+    {
+    case 'S': // Repartir los jugadores automáticamente
         contador = 0;
         while (contador < numJugadores)
         {
@@ -746,11 +806,9 @@ void jugar(abb *Arbol, grafo G)
                 contador++; // Insertamos el siguiente jugador
             }
         }
-        //printf("\nJugadores seleccionados:\n");
-        //_listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
-    }
-    else
-    { // Repartir los jugadores manualmente. No se admite en esta versión de la práctica.
+        break;
+
+    case 'N': // Repartir los jugadores manualmente.
         contador = 0;
         while (contador < numJugadores)
         {
@@ -796,19 +854,21 @@ void jugar(abb *Arbol, grafo G)
             }
         }
         free(nombreJugador); // Liberamos la memoria
+
+        break;
     }
 
     printf("\nNúmero de impostores: %d\n", numImpostores);
 
-    //printf("\nEstado final de los jugadores:\n");
-    //listadoJugadores(arbolJuego);
+    printf("\nEstado final de los jugadores:\n");
+    listadoJugadores(arbolJuego);
 
     nombreJugador = (char *)malloc(sizeof(char) * (L_NOMBRE + 1));
     do
     {
-        if (_ejecutarTick(arbolJuego, G))
+        if (_ejecutarTick(arbolJuego))
         { // Si se ha encontrado un jugador muerto en este tick...
-            printf("\n\nJugadores        |Ultima habitac.|\n----------------------------------\n");
+            printf("\nJugadores        | Ultima habitac. | Hab. actual     |\n------------------------------------------------------\n");
             _listadoJugadoresVivosYUltimasHabitaciones(arbolJuego);
             printf("\n");
 
@@ -821,7 +881,13 @@ void jugar(abb *Arbol, grafo G)
                 {                                                                     // Si hemos encontrado el jugador...
                     if (jugador.rol == ROL_IMPOSTOR || jugador.rol == ROL_TRIPULANTE) // El jugador tiene que estar vivo
                     {
-                        _matarJugador(jugador, arbolJuego);
+                        if (opcionAnunciarImpostores == 'S')
+                        {                                                                                                       // Si activamos la opción de anunciar impostores...
+                            printf("\n" COLOR_BLUE "%s" COLOR_RESET " %sera un impostor.\n\n", jugador.nombreJugador, jugador.rol == ROL_IMPOSTOR ? "" : "no "); // Anunciamos si el jugador era o no era un impostor
+                        }
+                        destruir_cola(&(jugador.tareas)); // Sacamos al jugador del curso de la partida, aunque no borramos su entrada en el árbol de juego
+                        _inicializarJugador(&jugador);
+                        modificar(arbolJuego, jugador);
                     }
                     else
                     {
@@ -833,10 +899,10 @@ void jugar(abb *Arbol, grafo G)
             {
                 printf("No se ha matado a nadie.\n");
             }
+            _retirarJugsMuertos(arbolJuego);
         }
 
         _siguienteTick(arbolJuego, G);
-        printf("\n\n");
         victoria = _comprobarVictoria(arbolJuego);
     } while (victoria == 0);
     free(nombreJugador);
