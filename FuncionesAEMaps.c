@@ -392,16 +392,23 @@ void guardarArchivoGrafo(grafo G)
 // Devuelve el vértice siguiente al origen en una ruta calculada por Floyd-Warshall
 tipovertice verticeSiguiente(grafo G, tipovertice origen, tipovertice destino, char tipo)
 {
+    printf("ESTO VA 1\n");
     int j, siguienteJ; // Como vamos a recorrer el camino en sentido inverso (destino -> origen), queremos quedarnos con el vértice anterior al origen. Eso será siguienteJ, que siempre guarda el siguiente de lo que sea J en un momento determinado.
     int matrizDistancias[MAXVERTICES][MAXVERTICES];
     struct camino matrizVPrevio[MAXVERTICES][MAXVERTICES];
+    if (strncmp(origen.habitacion, destino.habitacion, L_HABITACION)==0) {
+        fprintf(stderr, "La habitación de origen es la de destino (%s -> %s).\n", origen.habitacion, destino.habitacion);
+        //return origen;
+    }
     if (existe_vertice(G, origen) && existe_vertice(G, destino))
     {
         _floyd(G, tipo, matrizDistancias, matrizVPrevio);
         j = posicion(G, destino); // Vamos a ir recorriendo la ruta en orden inverso hasta encontrar la siguiente habitación al origen
+    printf("ESTO VA 2, %d\n", j);
         while (posicion(G, origen) != j)
         {
             siguienteJ = j;
+    printf("ESTO VA 3, %d\n", siguienteJ);
             j = matrizVPrevio[posicion(G, origen)][j].verticePrevio;
         }
     }

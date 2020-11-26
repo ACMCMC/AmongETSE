@@ -6,7 +6,7 @@
 #define L_NOMBRE 15
 #define L_LINEA_ARCHIVO 100
 
-#define NUM_TAREAS 5
+#define NUM_TAREAS 10
 
 #define INFINITO 1000
 
