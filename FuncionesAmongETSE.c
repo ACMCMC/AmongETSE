@@ -450,22 +450,29 @@ void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
 
     if (!es_vacia_cola(jugador->tareas))
     { // Si aún quedan tareas por realizar...
-        strncpy(habActual.habitacion, jugador->ultimaHabitacion, L_HABITACION);
-        strncpy(habDestino.habitacion, primero(jugador->tareas).lugarTarea, L_HABITACION);
-
-        habSiguiente = verticeSiguiente(G, habActual, habDestino, jugador->rol); // Obtenemos a qué habitación tendría que ir ahora nuestro jugador para acercarse a la de su tarea
-
-        switch (jugador->rol) // Escribimos la distancia a la siguiente habitación en el jugador
-        {
-        case 'T':
-            jugador->distancia = distancia_T(G, posicion(G, habActual), posicion(G, habSiguiente));
-            break;
-        case 'I':
-            jugador->distancia = distancia_I(G, posicion(G, habActual), posicion(G, habSiguiente));
-            break;
+        if (strncmp(jugador->siguienteHabitacion, primero(jugador->tareas).lugarTarea, L_HABITACION) == 0)
+        { // La habitación en la que está la siguiente tarea del jugador es la actual
+            jugador->distancia = 0;
         }
+        else
+        {
+            strncpy(habActual.habitacion, jugador->ultimaHabitacion, L_HABITACION);
+            strncpy(habDestino.habitacion, primero(jugador->tareas).lugarTarea, L_HABITACION);
 
-        strncpy(jugador->siguienteHabitacion, habSiguiente.habitacion, L_HABITACION); // Escribimos la siguiente habitación en el jugador
+            habSiguiente = verticeSiguiente(G, habActual, habDestino, jugador->rol); // Obtenemos a qué habitación tendría que ir ahora nuestro jugador para acercarse a la de su tarea
+
+            switch (jugador->rol) // Escribimos la distancia a la siguiente habitación en el jugador
+            {
+            case 'T':
+                jugador->distancia = distancia_T(G, posicion(G, habActual), posicion(G, habSiguiente));
+                break;
+            case 'I':
+                jugador->distancia = distancia_I(G, posicion(G, habActual), posicion(G, habSiguiente));
+                break;
+            }
+
+            strncpy(jugador->siguienteHabitacion, habSiguiente.habitacion, L_HABITACION); // Escribimos la siguiente habitación en el jugador
+        }
     }
 }
 
@@ -474,9 +481,7 @@ void _auxActualizarDistanciaHabitacion(tipoelem *jugador, grafo G)
 int _ejecutarTick(abb A, grafo G)
 {
     int mostrarMenuMuerteJugador = 0;
-    printf("esto va 1\n");
     _auxEjecutarTick(A, A, &mostrarMenuMuerteJugador);
-    printf("esto va 2\n");
     return mostrarMenuMuerteJugador;
 }
 
@@ -501,7 +506,6 @@ void _siguienteTick(abb A, grafo G)
         }
         if (!es_vacia_cola(jugador.tareas))
         {
-            printf("esto va 3\n");
             if (_jugadorEstaEnUnaHabitacion(jugador)) // El jugador ha llegado a una habitación, actualizamos la siguiente a la que le toca ir
             {
                 _auxActualizarDistanciaHabitacion(&jugador, G);
@@ -510,7 +514,6 @@ void _siguienteTick(abb A, grafo G)
             { // El jugador está en tránsito, así que decrementamos su distancia
                 jugador.distancia--;
             }
-            printf("esto va 4\n");
         }
         modificar(A, jugador);
         _siguienteTick(der(A), G);
