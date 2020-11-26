@@ -7,14 +7,6 @@
 #include "FuncionesAmongETSE.h"
 #include "cola.h"
 
-#define ROL_IMPOSTOR 'I'
-#define ROL_TRIPULANTE 'T'
-#define ROL_KILLED 'K'
-#define NO_ASIGNADO '\0'
-
-#define VICTORIA_IMPOSTORES 1
-#define VICTORIA_TRIPULANTES 2
-
 //Función privada que genera un número aleatorio entre inf y sup
 unsigned int _aleatorio(int inf, int sup)
 {

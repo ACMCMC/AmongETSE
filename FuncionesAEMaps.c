@@ -6,8 +6,6 @@
 #include "grafo.h"
 #include "ConstantesAmongETSE.h"
 
-#define INFINITY 1000
-
 struct camino // Struct que utilizamos en _floyd, para guardar información del vértice previo y el mapa al que pertenece
 {
     int verticePrevio;

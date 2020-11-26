@@ -4,10 +4,19 @@
 #define L_DESC_TAREA 30
 #define L_HABITACION 15
 #define L_NOMBRE 15
-
 #define L_LINEA_ARCHIVO 100
 
 #define NUM_TAREAS 5
+
+#define INFINITY 1000
+
+#define ROL_IMPOSTOR 'I'
+#define ROL_TRIPULANTE 'T'
+#define ROL_KILLED 'K'
+#define NO_ASIGNADO '\0'
+
+#define VICTORIA_IMPOSTORES 1
+#define VICTORIA_TRIPULANTES 2
 
 #define COLOR_RED "\x1b[31m"
 #define COLOR_GREEN "\x1b[32m"
