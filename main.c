@@ -21,22 +21,22 @@ Modificaciones con respecto a la especificación:
 
 int main(int argc, char **argv)
 {
-    //Grafo de números enteros
-    grafo G; //grafo
+    grafo G; // grafo
+    abb arbolJugadores; // árbol de jugadores
     char opcion;
 
     srand((unsigned int)time(NULL)); //semilla para aleatorios, se llamar sólo una vez al principio de main
 
     //Crear el árbol de jugadores
-    abb arbolJugadores;
     crear(&arbolJugadores);
-    //Leer el archivo de jugadores disco
+    //Leer el archivo de jugadores desde disco
     leerArchivoJugadores(&arbolJugadores);
 
     //Creo el grafo
     crear_grafo(&G);
     leerArchivoGrafo(&G);
     imprimir_grafo(G);
+    listadoJugadores(arbolJugadores);
     do
     {
         // Imprimimos un menú básico
