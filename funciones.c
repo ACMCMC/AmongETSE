@@ -48,13 +48,13 @@ void _printPrevVertex(struct camino matrix[][MAXVERTICES], int V)
 
 void _prim(grafo G, char mapa)
 {
-    int N; // El número de vértices del grafo
-    int *selected;         // Este vector va a guardar la lista de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
-    int i, j;                // Variables auxiliares
-    int numArcos = 0;        // El número de arcos del árbol de expansión
-    int distanciaTotal = 0;  // El coste total del árbol
-    int minimo;              // Variable auxiliar que en cada paso guardará el arco de mínimo coste que podemos añadir al árbol, sin que forme un ciclo
-    int vx, vy;              // Los vértices que estamos cogiendo para mirar si añadir su arco
+    int N;                  // El número de vértices del grafo
+    int *selected;          // Este vector va a guardar la lista de vértices seleccionados (0 = no seleccionado, 1 = seleccionado)
+    int i, j;               // Variables auxiliares
+    int numArcos = 0;       // El número de arcos del árbol de expansión
+    int distanciaTotal = 0; // El coste total del árbol
+    int minimo;             // Variable auxiliar que en cada paso guardará el arco de mínimo coste que podemos añadir al árbol, sin que forme un ciclo
+    int vx, vy;             // Los vértices que estamos cogiendo para mirar si añadir su arco
 
     //////////////////////////////////////////////////////////////////
     //
@@ -62,8 +62,8 @@ void _prim(grafo G, char mapa)
     //
     //////////////////////////////////////////////////////////////////
 
-    N = num_vertices(G); // Asignamos valor a N
-    selected = (int *) malloc(sizeof(int)*N); // Tenemos que reservar dinámicamente el vector, porque no conocemos a priori su tamaño (o podríamos usar también MAXVERTICES)
+    N = num_vertices(G);                       // Asignamos valor a N
+    selected = (int *)malloc(sizeof(int) * N); // Tenemos que reservar dinámicamente el vector, porque no conocemos a priori su tamaño (o podríamos usar también MAXVERTICES)
 
     for (i = 1; i < N; i++) // Inicializamos a 0 (no seleccionado) el vector de vértices seleccionados
     {
@@ -86,8 +86,9 @@ void _prim(grafo G, char mapa)
             {
                 for (j = 0; j < N; j++) // Volvemos a recorrer el vector mirando qué arcos están conectados con ese vértice
                 {
-                    if (mapa == 'T') // Si estamos operando con el mapa de tripulantes...
+                    switch (mapa)
                     {
+                    case 'T':                                         // Si estamos operando con el mapa de tripulantes...
                         if (selected[j] != 1 && distancia_T(G, i, j)) // Si el vértice j que estamos mirando ahora no ha sido seleccionado (crearía un ciclo), y está conectado con el vértice i, entonces...
                         {
                             if (minimo > distancia_T(G, i, j)) // Miramos si la distancia entre los vértices i y j es menor que la que hemos guardado en el mínimo
@@ -97,9 +98,9 @@ void _prim(grafo G, char mapa)
                                 vy = j;
                             }
                         }
-                    }
-                    else if (mapa == 'I') // Lo mismo que arriba, pero para el mapa de tripulantes
-                    {
+
+                        break;
+                    case 'I': // Lo mismo que arriba, pero para el mapa de impostores
                         if (selected[j] != 1 && distancia_I(G, i, j))
                         {
                             if (minimo > distancia_I(G, i, j))
@@ -109,6 +110,8 @@ void _prim(grafo G, char mapa)
                                 vy = j;
                             }
                         }
+
+                        break;
                     }
                 }
             }
@@ -162,19 +165,20 @@ void _floyd(grafo G, int origen, int destino, char tipo)
         {
             matrizDistancias[i][j] = INFINITY; // Empezamos con una distancia en principio infinita, y si se cumple alguna de las otras condiciones, la actualizaremos
 
-            if (tipo == 'I')
-            { // Estamos trabajando con el grafo de impostores
+            switch (tipo)
+            {
+            case 'I': // Estamos trabajando con el grafo de impostores
                 if (distancia_I(G, i, j))
                 { // Si la distancia en la matriz de adyacencia != 0, la distancia en la matriz de distancias será esa distancia
                     matrizDistancias[i][j] = distancia_I(G, i, j);
                 }
-            }
-            else
-            { // Trabajamos con el grafo de tripulantes
+                break;
+            case 'T': // Trabajamos con el grafo de tripulantes
                 if (distancia_T(G, i, j))
                 { // Si la distancia en la matriz de adyacencia != 0, la distancia en la matriz de distancias será esa distancia
                     matrizDistancias[i][j] = distancia_T(G, i, j);
                 }
+                break;
             }
 
             if (i == j)
@@ -192,8 +196,9 @@ void _floyd(grafo G, int origen, int destino, char tipo)
             caminoActual.verticePrevio = 0; // Empezamos, en principio, sin vértice previo
             caminoActual.mapa = tipo;
 
-            if (tipo == 'I')
-            { // Estamos trabajando con el grafo de impostores
+            switch (tipo)
+            {
+            case 'I': // Estamos trabajando con el grafo de impostores
                 if (distancia_I(G, i, j) && i != j)
                 { // Si la distancia en la matriz de adyacencia != 0, la distancia en la matriz de distancias será esa distancia
                     caminoActual.verticePrevio = i;
@@ -203,13 +208,13 @@ void _floyd(grafo G, int origen, int destino, char tipo)
                 { // Si la distancia en la matriz de adyacencia de impostores es la misma que en la de tripulantes, es porque es el mismo arco del grafo, y en ese caso lo tomamos como si "perteneciese al mapa de tripulantes"
                     caminoActual.mapa = 'T';
                 }
-            }
-            else
-            { // Trabajamos con el grafo de tripulantes
+                break;
+            case 'T': // Trabajamos con el grafo de tripulantes
                 if (distancia_T(G, i, j) && i != j)
                 { // Si la distancia en la matriz de adyacencia != 0, la distancia en la matriz de distancias será esa distancia
                     caminoActual.verticePrevio = i;
                 }
+                break;
             }
 
             matrizVPrevio[i][j] = caminoActual; // Escribimos el camino actual en la matriz
@@ -268,13 +273,14 @@ void _printPath(struct camino P[][MAXVERTICES], int i, int j, tipovertice *V, in
     if (i != j) // Si ésta no es la habitación de origen... (que lo sea es nuestra condición de parada de la función recursiva)
     {
         _printPath(P, i, P[i][j].verticePrevio, V, N);
-        if (P[i][j].mapa == 'T') // Imprimimos el tipo de arco, si no es la habitación de origen
+        switch (P[i][j].mapa) // Imprimimos el tipo de arco, si no es la habitación de origen
         {
+        case 'T':
             printf(" --");
-        }
-        else
-        {
+            break;
+        case 'I':
             printf(" ··");
+            break;
         }
     }
     printf("%s", V[j].habitacion); // Imprimimos esta habitación
@@ -340,8 +346,10 @@ void nuevo_arco(grafo *G)
 
     printf("Comunicacion mapa tripulantes (T) o impostores (I)? ");
     scanf(" %c", &opcion);
-    if (opcion == 'T' || opcion == 't')
+    switch (opcion)
     {
+    case 'T':
+    case 't':
         if (!distancia_T(*G, posicion(*G, v1), posicion(*G, v2)))
         {
             //Creación del arco
@@ -350,11 +358,10 @@ void nuevo_arco(grafo *G)
         else
         {
             printf("Ya existe un arco para esa combinación de vértices\n");
-            return;
         }
-    }
-    else if (opcion == 'I' || opcion == 'i')
-    {
+        break;
+    case 'I':
+    case 'i':
         if (!distancia_I(*G, posicion(*G, v1), posicion(*G, v2)))
         {
             //Creación del arco
@@ -363,13 +370,11 @@ void nuevo_arco(grafo *G)
         else
         {
             printf("Ya existe un arco para esa combinación de vértices\n");
-            return;
         }
-    }
-    else
-    {
+    break;
+    default:
         printf("Opción no válida\n");
-        return;
+        break;
     }
 }
 
