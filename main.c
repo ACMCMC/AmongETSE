@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "funciones.h"
+#include "FuncionesAEMaps.h"
 #include "ConstantesAmongETSE.h"
 
 /*

@@ -1,5 +1,5 @@
-#ifndef FUNCIONES_H
-#define FUNCIONES_H
+#ifndef FUNCIONESAEMAPS_H
+#define FUNCIONESAEMAPS_H
 
 #include "grafo.h"
 #include "ConstantesAmongETSE.h"
@@ -33,5 +33,5 @@ void rutaMasCorta(grafo G);
 void arbolExpansion(grafo G);
 
 
-#endif	/* FUNCIONES_H */
+#endif	/* FUNCIONESAEMAPS_H */
 
