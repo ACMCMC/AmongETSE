@@ -8,7 +8,7 @@
 
 #define NUM_TAREAS 5
 
-#define INFINITY 1000
+#define INFINITO 1000
 
 #define ROL_IMPOSTOR 'I'
 #define ROL_TRIPULANTE 'T'

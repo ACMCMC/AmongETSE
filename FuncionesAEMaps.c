@@ -20,7 +20,7 @@ void _printMatrix(int matrix[][MAXVERTICES], int V)
     {
         for (j = 0; j < V; j++)
         {
-            if (matrix[i][j] == INFINITY)
+            if (matrix[i][j] == INFINITO)
                 printf("%4s", "INF");
             else
                 printf("%4d", matrix[i][j]);
@@ -77,7 +77,7 @@ void _prim(grafo G, char mapa)
 
     while (numArcos < N - 1) // Mientras no hayamos recorrido todos los vértices del grafo... (la condición es numArcos < N-1, porque el número de arcos de un grafo siempre es por lo menos una unidad menor que su número de vértices si éste es fuertemente conexo; puede tener más arcos pero como éste es el árbol de expansión de coste mínimo nos interesa parar cuando hayamos recorrido todos los vértices, para lo cual necesitamos tener N-1 arcos. Esta condición no obliga a que los arcos no formen ciclos, pero eso lo conseguimos con las comprobaciones del código de dentro de este lazo)
     {
-        minimo = INFINITY;      // Empezamos con un coste mínimo de infinito, por lo que cualquier arco tendrá menos coste
+        minimo = INFINITO;      // Empezamos con un coste mínimo de infinito, por lo que cualquier arco tendrá menos coste
         for (i = 0; i < N; i++) // Recorremos todo el vector de vértices seleccionados
         {
             if (selected[i] == 1) // Si el vértice que miramos ha sido seleccionado...
@@ -161,7 +161,7 @@ void _floyd(grafo G, int origen, int destino, char tipo)
     {
         for (j = 0; j < N; j++)
         {
-            matrizDistancias[i][j] = INFINITY; // Empezamos con una distancia en principio infinita, y si se cumple alguna de las otras condiciones, la actualizaremos
+            matrizDistancias[i][j] = INFINITO; // Empezamos con una distancia en principio infinita, y si se cumple alguna de las otras condiciones, la actualizaremos
 
             switch (tipo)
             {
