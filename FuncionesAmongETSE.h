@@ -9,7 +9,7 @@
  * lee un archivo de jugadores de un fichero
  * @param A
  */
-void leerArchivo(abb *A);
+void leerArchivoJugadores(abb *A);
 
 /**
  * Inserta un nuevo jugador en el árbol
@@ -51,6 +51,6 @@ void consultarPorHabitacion(abb A);
  * Guarda los jugadores en jugadores.txt
  * @param A
  */
-void guardarArchivo(abb A);
+void guardarArchivoJugadores(abb A);
 
 #endif // FUNCIONESAMONGETSE_H

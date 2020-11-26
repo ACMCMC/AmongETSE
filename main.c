@@ -1,17 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h> //para utilizar la semilla aleatoria time(NULL)
+
 #include "FuncionesAEMaps.h"
+#include "FuncionesAmongETSE.h"
 #include "ConstantesAmongETSE.h"
+#include "abb.h"
+#include "grafo.h"
 
 /*
- * Programa que muestra el uso del TAD grafo de números enteros
- */
+Modificaciones con respecto a la especificación:
+
+- Un impostor solo mata a un tripulante si en la habitación en la que está hay más de un tripulante (ya que si solo estuvieran el impostor y un tripulante, se habría delatado).
+- El archivo con los nombres de los jugadores es jugadores.txt
+- Los impostores solo matan a otros jugadores el 66% de las veces
+- "Consultar por habitación" devuelve todos los jugadores que tengan al menos una de sus tareas en esa habitación
+- Al matar a los jugadores, se recorre aleatoriamente el árbol. De esta forma, hacemos el juego más impredecible, ya que si se recorriese haciendo un recorrido estándar, sabríamos que los primeros jugadores en morir se corresponden con los primeros impostores de la lista (en el caso del inorden). Si recorremos el árbol de forma aleatoria, entonces no se puede predecir esto.
+
+*/
 
 int main(int argc, char **argv)
 {
     //Grafo de números enteros
     grafo G; //grafo
     char opcion;
+
+    srand((unsigned int)time(NULL)); //semilla para aleatorios, se llamar sólo una vez al principio de main
+
+    //Crear el árbol de jugadores
+    abb arbolJugadores;
+    crear(&arbolJugadores);
+    //Leer el archivo de jugadores disco
+    leerArchivoJugadores(&arbolJugadores);
 
     //Creo el grafo
     crear_grafo(&G);
@@ -20,15 +40,19 @@ int main(int argc, char **argv)
     do
     {
         // Imprimimos un menú básico
-        printf("\n\na. Anadir habitacion\n");
-        printf("b. Clausurar habitacion\n");
-        printf("c. Crear comunicacion\n");
-        printf("d. Eliminar comunicacion\n");
-        printf("i. Imprimir mapa\n");
-        printf("r. Ruta mas rapida entre dos habitaciones\n");
-        printf("p. Arbol de expansion de coste minimo\n");
-        printf("f. Guardar grafo\n");
-        printf("s. Salir\n");
+        printf("\n\nBienvenid@ a AmongETSE\n\n");
+        printf("\ta. Alta de jugador@\n");
+        printf("\tb. Baja de jugador@\n");
+        printf("\tc. Crear comunicacion\n");
+        printf("\td. Eliminar comunicacion\n");
+        printf("\tf. Guardar archivos\n");
+        printf("\tg. Jugar\n");
+        printf("\th. Anadir habitacion\n");
+        printf("\ti. Imprimir mapa\n");
+        printf("\tl. Listado de jugador@s por orden alfabético\n");
+        printf("\tq. Clausurar habitacion\n");
+        printf("\tr. Ruta mas rapida entre dos habitaciones\n");
+        printf("\ts. Salir\n");
 
         printf("Opcion: ");
         scanf(" %c", &opcion); // Leemos la opción del usuario
@@ -37,10 +61,18 @@ int main(int argc, char **argv)
         {
         case 'a':
         case 'A':
-            introducir_vertice(&G);
+            altaJugador(&arbolJugadores);
             break;
         case 'b':
         case 'B':
+            bajaJugador(&arbolJugadores);
+            break;
+        case 'h':
+        case 'H':
+            introducir_vertice(&G);
+            break;
+        case 'q':
+        case 'Q':
             eliminar_vertice(&G);
             break;
         case 'c':
@@ -51,17 +83,22 @@ int main(int argc, char **argv)
         case 'D':
             eliminar_arco(&G);
             break;
-        case 'p':
-        case 'P':
-            arbolExpansion(G);
-            break;
         case 'i':
         case 'I':
             imprimir_grafo(G);
             break;
+        case 'l':
+        case 'L':
+            listadoJugadores(arbolJugadores);
+            break;
         case 'f':
         case 'F':
             guardarArchivoGrafo(G);
+            guardarArchivoJugadores(arbolJugadores);
+            break;
+        case 'g':
+        case 'G':
+            jugar(&arbolJugadores);
             break;
         case 'r':
         case 'R':
@@ -76,8 +113,9 @@ int main(int argc, char **argv)
         }
     } while (opcion != 's');
 
-    //Al salir, liberamos la memoria del TAD, lo destruimos
+    //Al salir, liberamos la memoria de los TAD, los destruimos
     borrar_grafo(&G);
+    destruir(&arbolJugadores);
 
     return (EXIT_SUCCESS);
 }

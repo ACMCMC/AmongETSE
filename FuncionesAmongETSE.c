@@ -479,7 +479,7 @@ void _limpiarDatos(abb A)
 }
 
 //Función para leer el archivo de disco
-void leerArchivo(abb *A)
+void leerArchivoJugadores(abb *A)
 {
     tipoelem registro;
     FILE *fp;
@@ -797,7 +797,7 @@ void consultarPorHabitacion(abb Arbol)
     free(habitaciones);
 }
 
-void guardarArchivo(abb A)
+void guardarArchivoJugadores(abb A)
 {
     FILE *fp;
     fp = fopen("jugadores.txt", "wt");
