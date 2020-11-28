@@ -455,13 +455,13 @@ void _auxEjecutarTick(abb arbolJugadores, abb arbolRecorrido, int *mostrarMenuMu
                 {
                     printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado la muerte de" COLOR_MAGENTA, jugador.nombreJugador);
                     _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
-                    printf(COLOR_RESET ".\n");
+                    printf(COLOR_RESET " en " COLOR_CYAN "%s" COLOR_RESET ".\n", jugador.siguienteHabitacion);
                 }
                 else if (numJugs > 1)
                 {
                     printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
                     _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
-                    printf(COLOR_RESET ".\n");
+                    printf(COLOR_RESET " en " COLOR_CYAN "%s" COLOR_RESET ".\n", jugador.siguienteHabitacion);
                 }
                 _retirarJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
             }
@@ -858,10 +858,14 @@ void jugar(abb *Arbol, grafo G)
         break;
     }
 
+    printf("\n" COLOR_RED "=========================" COLOR_RESET "\n");
+    printf(COLOR_RED "======== PARTIDA ========" COLOR_RESET "\n");
+    printf(COLOR_RED "=========================" COLOR_RESET "\n");
     printf("\nNúmero de impostores: %d\n", numImpostores);
 
-    printf("\nEstado final de los jugadores:\n");
-    listadoJugadores(arbolJuego);
+    printf("\nEstado final de los jugadores:\n\n");
+    _listadoNombresJugadores(arbolJuego);
+    printf("\n");
 
     nombreJugador = (char *)malloc(sizeof(char) * (L_NOMBRE + 1));
     do
