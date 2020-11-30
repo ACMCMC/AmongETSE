@@ -453,13 +453,13 @@ void _auxEjecutarTick(abb arbolJugadores, abb arbolRecorrido, int *mostrarMenuMu
                 *mostrarMenuMuerteJugador = 1;
                 if (numJugs == 1)
                 {
-                    printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado la muerte de" COLOR_MAGENTA, jugador.nombreJugador);
+                    printf("\n\n" COLOR_BLUE "%s" COLOR_RESET " ha reportado la muerte de" COLOR_MAGENTA, jugador.nombreJugador);
                     _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
                     printf(COLOR_RESET " en " COLOR_CYAN "%s" COLOR_RESET ".\n", jugador.siguienteHabitacion);
                 }
                 else if (numJugs > 1)
                 {
-                    printf(COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
+                    printf("\n\n"COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
                     _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
                     printf(COLOR_RESET " en " COLOR_CYAN "%s" COLOR_RESET ".\n", jugador.siguienteHabitacion);
                 }
