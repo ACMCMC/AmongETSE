@@ -14,14 +14,14 @@
 /////////////////////////////////////////////////////////// TIPOS DE DATOS
 
 //Información que se almacena en cada vértice
-typedef struct {
+typedef struct
+{
     char habitacion[L_HABITACION];
 } tipovertice;
 
-typedef struct tipografo * grafo;
+typedef struct tipografo *grafo;
 
 //////////////////////////////////////////////////////////////// FUNCIONES
-
 
 //Creación del grafo con 0 nodos
 void crear_grafo(grafo *G);
@@ -63,6 +63,6 @@ void borrar_grafo(grafo *G);
 int num_vertices(grafo G);
 
 //Devuelve el vector de vértices VERTICES del grafo G
-tipovertice* array_vertices(grafo G);
+tipovertice *array_vertices(grafo G);
 
-#endif	/* GRAFO_H */
+#endif /* GRAFO_H */

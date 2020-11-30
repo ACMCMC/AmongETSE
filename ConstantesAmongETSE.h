@@ -6,9 +6,10 @@
 #define L_NOMBRE 15
 #define L_LINEA_ARCHIVO 100
 
-#define NUM_TAREAS 10
-#define TIEMPO_MIN_TAREA 1
-#define TIEMPO_MAX_TAREA 3
+//Parámetros que influyen en la partida
+#define NUM_TAREAS 10      // El número de tareas que se asignan a cada jugador
+#define TIEMPO_MIN_TAREA 1 // El mínimo de tiempo que lleva realizar una tarea
+#define TIEMPO_MAX_TAREA 3 // El máximo de tiempo que lleva realizar una tarea
 
 #define INFINITO 1000
 

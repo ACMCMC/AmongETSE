@@ -8,8 +8,32 @@
 #include "abb.h"
 #include "grafo.h"
 
+// Aldán Creo Mariño, AED 2020/21
+
 /*
-Modificaciones con respecto a la especificación:
+SOBRE LA PRÁCTICA 7b
+
+En mi versión de AmongETSE, lo que se hace es que cada tick de tiempo los jugadores se mueven una unidad de distancia, hacia la habitación donde tienen su tarea. He añadido los siguientes campos al tipoelem (que representa al jugador):
+- La siguiente habitación en la ruta hacia la habitación de la tarea
+- La habitación anterior en la que estuvieron
+- La distancia que falta hasta llegar a la siguiente habitación
+- Una vez que llegan a la habitación de la tarea, se espera un tiempo aleatorio entre TIEMPO_MIN_TAREA y TIEMPO_MAX_TAREA (definidos en ConstantesAmongETSE.h), para representar lo que tardan en realizar esa tarea (tiempoRestanteTarea).
+
+Mientras están en una habitación (ya sea de paso, o ejecutando una tarea), un impostor que esté en esa misma habitación, podrá matar al tripulante. El juego no se para en ese momento, sino que se para cuando otro jugador (impostor o tripulante), descubre el cadáver del tripulante muerto. Es entonces cuando se muestra un menú al jugador para que decida quién cree que es el impostor. Una vez el cadáver es encontrado, lo "retiro del mapa" (no del árbol, sino que simplemente vacío todos sus campos para que no influya en el desarrollo de la partida).
+
+He introducido la opción de que el usuario decida si mostrar si el jugador que decide matar es tripulante o impostor (ya que así funciona en AmongUs original).
+
+No he incluido ninguna de las funciones del AEMaps en el menú del AmongETSE, ya que no le veo mucha lógica a hacerlo, sino que simplemente reutilizo _floyd del AEMaps (adaptado para que sea últil para el AmongETSE). En cualquier caso, el usuario no puede interactuar directamente con esa función.
+
+También he subido el número de tareas que realizan a 10 (se puede especificar en ConstantesAmongETSE.h), ya que si no a veces la partida termina muy rápido, ya que las tareas se van ejecutando automáticamente sin que intervenga el usuario.
+
+He incrementado el máximo de jugadores a 15, porque si no las partidas a veces acababan muy rápido (los impostores tienen más facilidad para matar en esta versión de AmongETSE, ya que los tripulantes se quedan esperando en las habitaciones mientras hacen las tareas).
+
+He tenido que adaptar bastantes otras funciones del AmongETSE, pero en general los cambios de comportamiento de cara al usuario serían esos.
+*/
+
+/*
+Modificaciones con respecto a la especificación del AmongETSE (v3):
 
 - Un impostor solo mata a un tripulante si en la habitación en la que está hay más de un tripulante (ya que si solo estuvieran el impostor y un tripulante, se habría delatado).
 - El archivo con los nombres de los jugadores es jugadores.txt
@@ -21,7 +45,7 @@ Modificaciones con respecto a la especificación:
 
 int main(int argc, char **argv)
 {
-    grafo G; // grafo
+    grafo G;            // grafo
     abb arbolJugadores; // árbol de jugadores
     char opcion;
 

@@ -10,8 +10,9 @@
 typedef struct tipocola *cola; /*tipo opaco*/
 
 //////////////////////////////////////////INICIO PARTE MODIFICABLE
-// Tipo de elemento de la cola. 
-typedef struct {
+// Tipo de elemento de la cola.
+typedef struct
+{
     char lugarTarea[L_HABITACION];
     char descripcionTarea[L_DESC_TAREA];
 } tipoelemCola;
@@ -61,6 +62,4 @@ void insertar_cola(cola *C, tipoelemCola E);
  */
 void suprimir_cola(cola *C);
 
-#endif	// COLA_H
-
-
+#endif // COLA_H

@@ -886,7 +886,7 @@ void jugar(abb *Arbol, grafo G)
                     if (jugador.rol == ROL_IMPOSTOR || jugador.rol == ROL_TRIPULANTE) // El jugador tiene que estar vivo
                     {
                         if (opcionAnunciarImpostores == 'S')
-                        {                                                                                                       // Si activamos la opción de anunciar impostores...
+                        {                                                                                                                                        // Si activamos la opción de anunciar impostores...
                             printf("\n" COLOR_BLUE "%s" COLOR_RESET " %sera un impostor.\n\n", jugador.nombreJugador, jugador.rol == ROL_IMPOSTOR ? "" : "no "); // Anunciamos si el jugador era o no era un impostor
                         }
                         destruir_cola(&(jugador.tareas)); // Sacamos al jugador del curso de la partida, aunque no borramos su entrada en el árbol de juego

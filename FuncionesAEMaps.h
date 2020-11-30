@@ -29,4 +29,4 @@ void guardarArchivoGrafo(grafo G);
 // Devuelve el vértice siguiente al origen en una ruta calculada por Floyd-Warshall
 tipovertice verticeSiguiente(grafo G, tipovertice origen, tipovertice destino, char tipo);
 
-#endif	/* FUNCIONESAEMAPS_H */
+#endif /* FUNCIONESAEMAPS_H */
