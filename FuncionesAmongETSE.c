@@ -38,6 +38,7 @@ cola _copiarTareas(cola colaTareas)
     return newCola;
 }
 
+// Copia los jugadores del árbol origen en el árbol destino, copiando su cola de tareas
 void _copiarJugadoresArbol(abb orig, abb dest)
 {
     tipoelem jug;
@@ -62,6 +63,7 @@ void _inicializarJugador(tipoelem *registro)
     registro->tiempoRestanteTarea = -1;
 }
 
+// Indica si un jugador está en una habitación (es decir, la distancia a siguienteHabitacion es 0)
 int _jugadorEstaEnUnaHabitacion(tipoelem jugador)
 {
     return jugador.siguienteHabitacion[0] != NO_ASIGNADO && jugador.distancia == 0;
@@ -104,6 +106,7 @@ void _guardarJugadoresArbol(FILE *fp, abb A)
     }
 }
 
+// Mata al jugador seleccionado (ROL_KILLED)
 void _matarJugador(tipoelem jugador, abb A)
 {
     jugador.rol = ROL_KILLED;
@@ -209,6 +212,7 @@ void _imprimirJugsPorHabitacion(abb A, char rol, char *habitacion)
     }
 }
 
+// Devuelve el número de jugadores con un rol determinado que hay dentro de la habitación seleccionada
 int _numJugsPorHabitacion(abb A, char rol, char *habitacion)
 {
     int numero = 0;
@@ -408,6 +412,7 @@ void _asignarTareas(tipoelem jugador)
     }
 }
 
+// Mata a un jugador por su índice dentro de una habitación concreta, entre los que tienen el rol elegido
 void _auxMatarJugPorIndiceHabitacion(abb A, int jugMatar, int *i, char rol, char *habitacion)
 {
     tipoelem jugador;
@@ -429,6 +434,7 @@ void _auxMatarJugPorIndiceHabitacion(abb A, int jugMatar, int *i, char rol, char
     }
 }
 
+// Mata a un jugador por su índice dentro de una habitación concreta, entre los que tienen el rol elegido. Necesitamos mantener una cierta memoria sobre qué índice es el jugador dentro de la habitación, porque la muerte no queremos que sea totalmente aleatoria, sino que queremos que muera el jugador con el índice elegido (que es un índice aleatorio, pero eso es algo externo a la función, que no le compete; esta funcion podría usarse también para matar a jugadores concretos).
 void _matarJugPorIndiceHabitacion(abb A, int jugMatar, char rol, char *habitacion)
 {
     int i = 0;
@@ -459,7 +465,7 @@ void _auxEjecutarTick(abb arbolJugadores, abb arbolRecorrido, int *mostrarMenuMu
                 }
                 else if (numJugs > 1)
                 {
-                    printf("\n\n"COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
+                    printf("\n\n" COLOR_BLUE "%s" COLOR_RESET " ha reportado las muertes de" COLOR_MAGENTA, jugador.nombreJugador);
                     _imprimirJugsPorHabitacion(arbolJugadores, ROL_KILLED, jugador.siguienteHabitacion);
                     printf(COLOR_RESET " en " COLOR_CYAN "%s" COLOR_RESET ".\n", jugador.siguienteHabitacion);
                 }
@@ -744,6 +750,7 @@ void _listadoNombresJugadores(abb A)
     }
 }
 
+// Se ejecuta al inicio de la partida, para hacer que los jugadores empiecen en la cafetería y se dirijan a su siguiente habitación según la tarea que les toque realizar.
 void _prepararJugadorInicio(tipoelem *jugador, grafo G)
 {
     strncpy(jugador->ultimaHabitacion, "Cafeteria", L_HABITACION);
@@ -752,7 +759,7 @@ void _prepararJugadorInicio(tipoelem *jugador, grafo G)
     _auxActualizarDistanciaHabitacion(jugador, G);
 }
 
-//Función que genera los datos de una partida: jugadores, roles y tareas
+//Función que genera los datos de una partida: jugadores, roles y tareas, y deja al usuario jugarla
 void jugar(abb *Arbol, grafo G)
 {
     int numJugadores, numImpostores, contador, victoria; // Variables auxiliares que usaremos para hacer la asignación
@@ -983,6 +990,7 @@ void consultarPorHabitacion(abb Arbol)
     free(habitaciones);
 }
 
+// Guarda los jugadores en jugadores.txt
 void guardarArchivoJugadores(abb A)
 {
     FILE *fp;
